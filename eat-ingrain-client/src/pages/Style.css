@@ -1,0 +1,177 @@
+.contact-container {
+  position: relative; /* Setting the container's position relative to its normal position */
+  justify-content: center; /* Aligning items to the start (left) */
+  align-items: center; /* Aligning items to the bottom */
+  height: 110vh; /* Setting the height of the container to 87% of the viewport height */
+
+}
+
+.form-section {
+  z-index: 1; /* Setting the stack order of the form section */
+  background-color: ingrain-background-color; /* Setting the background color of the form section */
+  margin-left: 10px; /* Adding margin on the left to move the container more towards the left */
+  padding: 20px; /* Adding padding inside the form section for better spacing */
+  width: 90%; /* Setting the width of the form section to 70% of its parent container */
+  
+}
+
+.right-area {
+  position: absolute; /* Positioning the area absolutely */
+   /* Aligning the top of the area with the top of the container */
+  right: 0; /* Aligning the right of the area with the right of the container */
+  width: 30%; /* Setting the width of the area to 30% of its parent container */
+  height: 90%; /* Setting the height of the area to match the height of the container */
+  background-color: ingrain-background-color; /* Setting a background color for the area */
+  z-index: 1; /* Setting the stack order of the area behind the form section */
+}
+
+
+
+
+/*
+make speech bubble inside containter
+make container position top right of grainy
+
+*/
+
+
+/* Animation styling */
+.animate-spin-slow {
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.aesthet-nova {
+  font-family: aesthet-nova, serif;
+  font-style: normal;
+  font-weight: 900;
+  font-size: xx-large;
+}
+
+.aesthet-nova-h1 {
+  font-family: aesthet-nova, serif;
+  font-style: normal;
+  font-weight: 700; 
+  font-size: x-large;
+}
+
+.aesthet-nova-h2 {
+  font-family: aesthet-nova, serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: large;
+}
+
+.aesthet-nova-h3 {
+  font-family: aesthet-nova, serif;
+  font-style: normal;
+  font-weight: 500;
+  /* font-size: x-large; */
+}
+
+.video-responsive {
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  position: relative;
+  height: 0;
+  max-width: 100%;
+  background: #000;
+}
+
+.video-responsive iframe {
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.hover-button-color {
+  color: #83af9b
+}
+
+.icon-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.carousel-item {
+  flex: 0 0 auto;
+  margin: 0 11px; /* Adjust margin as needed */
+}
+
+.carousel-item img {
+  transition: opacity 0.3s ease;
+  /* max-width: auto; Adjust max-width as needed */
+  max-height: 500px; /* Adjust max-height as needed */
+  width: auto;
+  height: 500px;
+  border-radius: 8px;
+}
+
+/* For mobile */
+@media (max-width: 768px) {
+  .carousel-item img {
+    height: 400px; /* Adjust height as needed */
+    width: auto; /* Ensure the width adjusts proportionally */
+    max-height: 400px; /* Make sure max-height is also adjusted */
+  }
+}
+
+.carousel-item:hover .icon-container,
+.carousel-item:hover img {
+  opacity: 1;
+}
+
+.carousel-item:hover img {
+  opacity: 0.5;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  color: white;
+}
+
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: #000; /* Change to your desired color */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #000; /* Optional: for better visual separation */
+}
+
+.timeline-image {
+  transition: transform 0.3s ease;
+}
+
+.timeline-image:hover {
+  transform: scale(1.3); /* Adjust scale factor as needed */
+  border-radius: 0; /* Remove rounded corners */
+}
+
+.lighter-border {
+  border-top: 1.5px solid rgba(0, 0, 0, 0.3); /* Adjust color and opacity as needed */
+}
