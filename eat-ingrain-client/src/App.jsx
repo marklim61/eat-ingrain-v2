@@ -15,6 +15,7 @@ import {
   ProductDetail,
   CartModal,
   ShoppingCart,
+  ShippingPage
 } from "./pages/index";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -100,6 +101,7 @@ const App = () => {
                 />
               }
             />
+            <Route path="/shipping" element={<ShippingPage />} />
           </Routes>
           <ConditionalFooter />
         </div>

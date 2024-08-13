@@ -129,9 +129,9 @@ const CartModal = ({
           )}
         </div>
         <div className="p-4 border-t border-gray-200">
-          <div className="flex flex-col justify-between items-center mb-4">
+          <div className="flex flex-col justify-between mb-4">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-2xl font-semibold aesthet-nova-h1">
+              <span className="text-2xl font-semibold aesthet-nova-h1 ">
                 Subtotal:
               </span>
               <span className="text-2xl font-semibold aesthet-nova-h1">
@@ -143,7 +143,7 @@ const CartModal = ({
               className="w-full py-2 bg-neutral-950 text-ingrain-color-orange text-xl rounded text-center hover:bg-ingrain-color-orange hover:text-neutral-950"
               onClick={onClose}
             >
-              Checkout
+              Shopping Cart
             </NavLink>
           </div>
         </div>
