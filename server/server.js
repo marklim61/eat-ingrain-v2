@@ -53,19 +53,26 @@ app.post("/api/submitPayment", async (req, res) => {
     billingPostalCode,
     emailAddress,
     shippingAddress,
+    amount,
   } = req.body;
 
-  console.log("Source ID:", sourceId); // Log the sourceId to the console
+  // Log the some datas
+  console.log("Source ID:", sourceId); 
+  console.log("Amount (in dollars):", amount);
 
   const idempotencyKey = require("crypto").randomUUID();
 
   try {
+    const amountInCents = BigInt(Math.round(parseFloat(amount) * 100));
+    
+    console.log("Amount (in cents):", amountInCents); // 'n': Indicates it's a BigInt.
+
     const { result } = await client.paymentsApi.createPayment({
       idempotencyKey,
       sourceId,
       amountMoney: {
         currency: "USD",
-        amount: 500, // Change to the actual amount you want to charge
+        amount: amountInCents, // Change to the actual amount you want to charge
       },
       billingAddress: {
         addressLine1: billingAddress,

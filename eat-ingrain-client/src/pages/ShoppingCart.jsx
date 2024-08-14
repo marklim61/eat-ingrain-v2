@@ -37,12 +37,12 @@ const ShoppingCart = ({ cartItems, updateQuantity, removeItem }) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="flex flex-col p-8 shadow-lg rounded-lg w-[75%] max-w-full mt-64 mb-36 bg-ingrain-board-color">
+      <div className="flex flex-col p-8 shadow-lg rounded-lg w-[65%] max-w-full mt-64 mb-36 bg-ingrain-board-color">
         <ul className="steps mb-6">
           <li className="step step-primary">Cart</li>
-          <li className="step">Shipping</li>
           <li className="step">Payment</li>
           <li className="step">Review</li>
+          {/* <li className="step">Review</li> */}
         </ul>
 
         {/* Left Section: Cart Items */}
@@ -147,7 +147,7 @@ const ShoppingCart = ({ cartItems, updateQuantity, removeItem }) => {
                 </div>
                 <div className="flex justify-center">
                   <NavLink
-                    to="/shipping"
+                    to="/payment"
                     className="w-full py-2 bg-neutral-950 text-ingrain-color-orange text-xl rounded mt-4 text-center max-w-xs"
                   >
                     Proceed to Checkout

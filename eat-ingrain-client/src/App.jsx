@@ -15,7 +15,6 @@ import {
   ProductDetail,
   CartModal,
   ShoppingCart,
-  ShippingPage,
   PaymentComponent,
 } from "./pages/index";
 import Navbar from "./components/Navbar";
@@ -117,12 +116,10 @@ const App = () => {
               }
             />
             <Route
-              path="/shipping"
-              element={<ShippingPage summary={summary} />}
-            />
-            <Route
               path="/payment"
-              element={<PaymentComponent summary={summary} />}
+              element={
+                <PaymentComponent summary={summary} cartItems={cartItems} />
+              }
             />
           </Routes>
           <ConditionalFooter />
