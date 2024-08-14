@@ -120,7 +120,10 @@ const App = () => {
               path="/shipping"
               element={<ShippingPage summary={summary} />}
             />
-            <Route path="/payment" element={<PaymentComponent />} />
+            <Route
+              path="/payment"
+              element={<PaymentComponent summary={summary} />}
+            />
           </Routes>
           <ConditionalFooter />
         </div>
