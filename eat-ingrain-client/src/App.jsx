@@ -15,7 +15,8 @@ import {
   ProductDetail,
   CartModal,
   ShoppingCart,
-  ShippingPage
+  ShippingPage,
+  PaymentComponent,
 } from "./pages/index";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -75,6 +76,20 @@ const App = () => {
     // Redirect to checkout page or handle checkout process here
   };
 
+  const calculateSummary = () => {
+    const subtotal = cartItems
+      .reduce((acc, item) => acc + (item.priceInCents / 100) * item.quantity, 0)
+      .toFixed(2);
+    const shipping = "5.99";
+    const tax = "0.00";
+    const balance = (parseFloat(subtotal) + parseFloat(shipping)).toFixed(2);
+    const itemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+    return { subtotal, shipping, tax, balance, itemCount };
+  };
+
+  const summary = calculateSummary();
+
   return (
     <div className="min-h-screen bg-white">
       <Router>
@@ -101,7 +116,11 @@ const App = () => {
                 />
               }
             />
-            <Route path="/shipping" element={<ShippingPage />} />
+            <Route
+              path="/shipping"
+              element={<ShippingPage summary={summary} />}
+            />
+            <Route path="/payment" element={<PaymentComponent />} />
           </Routes>
           <ConditionalFooter />
         </div>

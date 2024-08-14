@@ -1,7 +1,14 @@
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 
-const ShippingPage = ({ onContinueToPayment }) => {
+const ShippingPage = ({ onContinueToPayment, summary }) => {
+  const { subtotal, shipping, tax, balance, itemCount } = summary;
+
+  // Determine the correct word for "item"
+  const itemsLabel = itemCount === 1 ? "item" : "items";
+
   const [shippingInfo, setShippingInfo] = useState({
     email: "",
     firstName: "",
@@ -26,7 +33,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
   };
 
   return (
-    <div className="flex items-start justify-center min-h-screen p-8">
+    <div className="flex items-start justify-center min-h-screen">
       <div className="flex flex-col p-8 shadow-lg rounded-lg w-[75%] max-w-full mt-64 mb-36 bg-ingrain-board-color">
         <ul className="steps mb-6">
           <li className="step step-primary">Cart</li>
@@ -35,21 +42,26 @@ const ShippingPage = ({ onContinueToPayment }) => {
           <li className="step">Review</li>
         </ul>
 
-        {/* Left Section: Cart Items */}
-        <div className="flex justify-between">
-          <div className="flex justify-center items-start min-h-screen space-x-6 p-8">
-            <form 
-              onSubmit={handleSubmit} 
-              className="w-full max-w-lg p-8">
-              <h2 className="text-3xl font-semibold mb-6">
+        {/* Left Section: Shipping Info */}
+        <div className="flex justify-between space-x-8">
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-4xl font-bold aesthet-nova">
                 Shipping Information
               </h2>
-
-              {/* Contact Information */}
+              <NavLink
+                to="/shopping-cart"
+                className="text-lg aesthet-nova-h1 hover:underline hover:text-ingrain-color-orange"
+              >
+                <FontAwesomeIcon icon={faArrowLeft} /> Back to Cart
+              </NavLink>
+            </div>
+            {/* Contact Information */}
+            <form onSubmit={handleSubmit}>
               <div className="mb-6">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium mb-2"
+                  className="font-semibold aesthet-nova-h3 text-md"
                 >
                   Email
                 </label>
@@ -59,7 +71,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                   name="email"
                   value={shippingInfo.email}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded"
+                  className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                   required
                 />
               </div>
@@ -69,7 +81,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                 <div className="flex-1">
                   <label
                     htmlFor="firstName"
-                    className="block text-sm font-medium mb-2"
+                    className="font-semibold aesthet-nova-h3 text-md"
                   >
                     First Name
                   </label>
@@ -79,14 +91,14 @@ const ShippingPage = ({ onContinueToPayment }) => {
                     name="firstName"
                     value={shippingInfo.firstName}
                     onChange={handleChange}
-                    className="w-full p-3 border rounded"
+                    className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                     required
                   />
                 </div>
                 <div className="flex-1">
                   <label
                     htmlFor="lastName"
-                    className="block text-sm font-medium mb-2"
+                    className="font-semibold aesthet-nova-h3 text-md"
                   >
                     Last Name
                   </label>
@@ -96,7 +108,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                     name="lastName"
                     value={shippingInfo.lastName}
                     onChange={handleChange}
-                    className="w-full p-3 border rounded"
+                    className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                     required
                   />
                 </div>
@@ -106,7 +118,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
               <div className="mb-6">
                 <label
                   htmlFor="address"
-                  className="block text-sm font-medium mb-2"
+                  className="font-semibold aesthet-nova-h3 text-md"
                 >
                   Address
                 </label>
@@ -116,7 +128,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                   name="address"
                   value={shippingInfo.address}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded"
+                  className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                   required
                 />
               </div>
@@ -124,7 +136,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
               <div className="mb-6">
                 <label
                   htmlFor="apartment"
-                  className="block text-sm font-medium mb-2"
+                  className="font-semibold aesthet-nova-h3 text-md"
                 >
                   Apartment, Suite, etc. (Optional)
                 </label>
@@ -134,7 +146,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                   name="apartment"
                   value={shippingInfo.apartment}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded"
+                  className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                 />
               </div>
 
@@ -143,7 +155,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                 <div className="flex-1">
                   <label
                     htmlFor="city"
-                    className="block text-sm font-medium mb-2"
+                    className="font-semibold aesthet-nova-h3 text-md"
                   >
                     City
                   </label>
@@ -153,14 +165,14 @@ const ShippingPage = ({ onContinueToPayment }) => {
                     name="city"
                     value={shippingInfo.city}
                     onChange={handleChange}
-                    className="w-full p-3 border rounded"
+                    className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                     required
                   />
                 </div>
                 <div className="flex-1">
                   <label
                     htmlFor="country"
-                    className="block text-sm font-medium mb-2"
+                    className="font-semibold aesthet-nova-h3 text-md"
                   >
                     Country/Region
                   </label>
@@ -169,7 +181,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                     name="country"
                     value={shippingInfo.country}
                     onChange={handleChange}
-                    className="w-full p-3 border rounded"
+                    className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                     required
                   >
                     <option value="United States">United States</option>
@@ -185,7 +197,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                 <div className="flex-1">
                   <label
                     htmlFor="state"
-                    className="block text-sm font-medium mb-2"
+                    className="font-semibold aesthet-nova-h3 text-md"
                   >
                     State
                   </label>
@@ -195,14 +207,14 @@ const ShippingPage = ({ onContinueToPayment }) => {
                     name="state"
                     value={shippingInfo.state}
                     onChange={handleChange}
-                    className="w-full p-3 border rounded"
+                    className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                     required
                   />
                 </div>
                 <div className="flex-1">
                   <label
                     htmlFor="zipCode"
-                    className="block text-sm font-medium mb-2"
+                    className="font-semibold aesthet-nova-h3 text-md"
                   >
                     Zip Code
                   </label>
@@ -212,7 +224,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
                     name="zipCode"
                     value={shippingInfo.zipCode}
                     onChange={handleChange}
-                    className="w-full p-3 border rounded"
+                    className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                     required
                   />
                 </div>
@@ -222,7 +234,7 @@ const ShippingPage = ({ onContinueToPayment }) => {
               <div className="mb-6">
                 <label
                   htmlFor="phoneNumber"
-                  className="block text-sm font-medium mb-2"
+                  className="font-semibold aesthet-nova-h3 text-md"
                 >
                   Phone Number (Optional)
                 </label>
@@ -232,44 +244,44 @@ const ShippingPage = ({ onContinueToPayment }) => {
                   name="phoneNumber"
                   value={shippingInfo.phoneNumber}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded"
+                  className="input w-full shadow-md bg-neutral-100 p-3 aesthet-nova-h2"
                 />
               </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full py-3 bg-neutral-950 text-ingrain-color-orange text-xl rounded"
-              >
-                Continue to Payment
-              </button>
             </form>
           </div>
 
           {/* Right Section: Summary */}
-          <div className="w-1/3 pt-12">
+          <div className="w-1/3 pt-8">
             <div className="p-8 bg-ingrain-color-orange shadow-lg rounded-lg sticky top-16">
               <h2 className="text-2xl font-semibold mb-6">Summary</h2>
               <div className="p-4 rounded-lg flex-grow">
                 <div className="flex justify-between mb-4">
-                  <span className="text-lg font-semibold">Subtotal</span>
-                  <span className="text-lg font-semibold">0.00</span>
+                  <span className="text-lg font-semibold">Subtotal ({itemCount} {itemsLabel})</span>
+                  <span className="text-lg font-semibold">${subtotal}</span>
                 </div>
                 <div className="flex justify-between mb-4">
                   <span className="text-lg font-semibold">
                     Shipping & Handling
                   </span>
-                  <span className="text-lg font-semibold">$5.00</span>
+                  <span className="text-lg font-semibold">${shipping}</span>
                 </div>
                 <div className="flex justify-between mb-4">
                   <span className="text-lg font-semibold">
                     Tax (Calculated at Checkout)
                   </span>
-                  <span className="text-lg font-semibold">$0.00</span>
+                  <span className="text-lg font-semibold">${tax}</span>
                 </div>
                 <div className="flex justify-between border-t pt-4 mb-4">
                   <span className="text-lg font-semibold">Balance:</span>
-                  <span className="text-lg font-semibold">0.00</span>
+                  <span className="text-lg font-semibold">${balance}</span>
+                </div>
+                <div className="flex justify-center">
+                  <NavLink
+                    to="/payment"
+                    className="w-full py-2 bg-neutral-950 text-ingrain-color-orange text-xl rounded mt-4 text-center max-w-xs"
+                  >
+                    Proceed to Payment
+                  </NavLink>
                 </div>
               </div>
             </div>

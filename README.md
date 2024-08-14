@@ -10,7 +10,7 @@ A Vite + React application for a small food popup business.
 
 ########################### FRONTEND ###########################
 
-## Features 
+## Frontend Features 
 
 - Interactive and responsive design
 - 4 main pages (About, Events, Shop, Contact)
@@ -19,8 +19,7 @@ A Vite + React application for a small food popup business.
 - Shopping cart functionality
 - Integration with Square payment gateway
 
-
-a. Navigate to the project directory 
+a. Navigate to the project directory
 	cd eat-ingrain-client
 
 b. Install dependencies
@@ -42,7 +41,7 @@ c. Start the development app
 
 ########################### BACKEND ###########################
 
-## Features
+## Backend Features
 
 - RESTful API endpoints for product management
 - Integration with Square payment gateway

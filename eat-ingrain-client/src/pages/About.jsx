@@ -41,7 +41,7 @@ const About = () => {
 
         <div className="relative z-1 text-left flex flex-col justify-center h-full w-full p-16 mt-24">
           <article className="prose lg:prose-2xl aesthet_nova text-white text-left">
-            <h1 className="aesthet-nova-h1">The art of crafting cool food</h1>
+            <h1 className="aesthet-nova-h1 text-white">The art of crafting cool food</h1>
             <p className="aesthet-nova-h2 pt-6 text-3xl">
               InGrain. A Brand. A Team. With Passion. To make cool food. For Da
               Culture.
