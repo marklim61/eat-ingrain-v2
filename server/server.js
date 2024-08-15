@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const { Client } = require("square");
 const bodyParser = require("body-parser");
-const cors = require("cors"); // Import the cors package
+const cors = require("cors");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -11,14 +11,14 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static("public"));
-app.use(cors({ origin: process.env.CLIENT_URL })); // Allow requests from this origin
+app.use(cors({ origin: process.env.CLIENT_URL })); // Allow requests from this origin (5173)
 
 // Add this line to handle BigInt serialization
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-// Import the storeItems from the JSON file
+// Import the storeItems from the JSON file (fake database for now)
 const storeItems = require("./storeItems.json");
 
 const client = new Client({

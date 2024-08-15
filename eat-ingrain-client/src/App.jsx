@@ -16,6 +16,7 @@ import {
   CartModal,
   ShoppingCart,
   PaymentComponent,
+  SuccessPage,
 } from "./pages/index";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -116,11 +117,12 @@ const App = () => {
               }
             />
             <Route
-              path="/payment"
+              path="/checkout"
               element={
                 <PaymentComponent summary={summary} cartItems={cartItems} />
               }
             />
+            <Route path="/success" element={<SuccessPage />} />
           </Routes>
           <ConditionalFooter />
         </div>

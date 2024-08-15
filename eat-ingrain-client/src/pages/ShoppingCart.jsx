@@ -147,7 +147,7 @@ const ShoppingCart = ({ cartItems, updateQuantity, removeItem }) => {
                 </div>
                 <div className="flex justify-center">
                   <NavLink
-                    to="/payment"
+                    to="/checkout"
                     className="w-full py-2 bg-neutral-950 text-ingrain-color-orange text-xl rounded mt-4 text-center max-w-xs"
                   >
                     Proceed to Checkout

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { CreditCard, PaymentForm } from "react-square-web-payments-sdk";
+import axios from "axios";
 
 const PaymentComponent = ({ summary, cartItems }) => {
   const appId = import.meta.env.VITE_APP_SQUARE_APP_ID; // Use environment variable
@@ -28,6 +29,7 @@ const PaymentComponent = ({ summary, cartItems }) => {
 
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -40,36 +42,36 @@ const PaymentComponent = ({ summary, cartItems }) => {
   const handleTokenization = async (token) => {
     setLoading(true);
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/submitPayment`,
         {
-          method: "POST",
+          sourceId: token.token,
+          cardholderName: formData.cardholderName,
+          billingAddress: formData.billingAddress,
+          billingCity: formData.billingCity,
+          billingState: formData.billingState,
+          billingCountry: formData.billingCountry,
+          billingPostalCode: formData.billingPostalCode,
+          emailAddress: formData.emailAddress,
+          shippingAddress: formData.shippingAddress,
+          shippingCity: formData.shippingCity,
+          shippingState: formData.shippingState,
+          shippingCountry: formData.shippingCountry,
+          shippingPostalCode: formData.shippingPostalCode,
+          amount: balance,
+        },
+        {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            sourceId: token.token,
-            cardholderName: formData.cardholderName,
-            billingAddress: formData.billingAddress,
-            billingCity: formData.billingCity,
-            billingState: formData.billingState,
-            billingCountry: formData.billingCountry,
-            billingPostalCode: formData.billingPostalCode,
-            emailAddress: formData.emailAddress,
-            shippingAddress: formData.shippingAddress,
-            shippingCity: formData.shippingCity,
-            shippingState: formData.shippingState,
-            shippingCountry: formData.shippingCountry,
-            shippingPostalCode: formData.shippingPostalCode,
-            amount: balance,
-          }),
         }
       );
 
-      const result = await response.json();
+      const result = response.data;
 
-      if (response.ok) {
+      if (response.status === 200) {
         setPaymentStatus({ success: true, result });
+        navigate("/success");
       } else {
         setPaymentStatus({
           success: false,
@@ -347,10 +349,26 @@ const PaymentComponent = ({ summary, cartItems }) => {
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
-                    <span className="text-lg font-semibold">{item.name}</span>
-                    <span className="text-lg font-semibold">
-                      ${(item.priceInCents / 100).toFixed(2)} x {item.quantity}
-                    </span>
+                    <div className="flex flex-col justify-between w-full ml-4">
+                      <div>
+                        <h3 className="text-lg font-semibold aesthet-nova-h1">
+                          {item.name}
+                        </h3>
+                        <p className="text-gray-500 aesthet-nova-h3 ">
+                          Size: {item.size}
+                        </p>
+                        <div className="flex items-center">
+                          <div className="flex items-center">
+                            <p className="text-gray-500 aesthet-nova-h3 ">
+                              Quantity: {item.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="font-semibold aesthet-nova-h2 ml-auto">
+                      ${(item.priceInCents / 100).toFixed(2)}
+                    </p>
                   </li>
                 ))}
               </ul>
