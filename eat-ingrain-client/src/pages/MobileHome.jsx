@@ -3,13 +3,13 @@ import grainy from '../assets/transparentGrainy2.png'
 import './Style.css'
 import './speechbubble.css'
 import { NavLink } from 'react-router-dom'
+import Navbar from '../components/Navbar'
 
 const MobileHome = () => {
 
   return (
     // Put everything in a container
     <div className="flex justify-center items-center max-h-screen max-w-screen bg-white">
-
       {/* Center grainy */}
       <div className="inset-0 justify-center flex items-center h-screen pt-12"> 
         <img 

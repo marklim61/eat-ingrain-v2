@@ -56,7 +56,7 @@ const Events = () => {
                 opacity: 0.2,
               }}
             ></div>
-            <h1 className="md:text-5xl font-bold mb-4 text-white aesthet-nova text-4xl text-center">
+            <h1 className="md:text-xl font-bold mt-[calc(8rem+40px)] mb-4 text-white aesthet-nova text-4xl text-center">
               JOIN US FOR OUR NEXT POPUP <br /> AT GOAL. BREWING
             </h1>
             <h4 className="text-white aesthet-nova-h2 mb-6 text-center text-xl">

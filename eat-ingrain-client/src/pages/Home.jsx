@@ -3,6 +3,7 @@ import grainy from '../assets/transparentGrainy2.png'
 import { NavLink } from 'react-router-dom'
 import './speechbubble.css'
 import './Style.css'
+import Navbar from '../components/Navbar'
 
 const Home = () => {
   const [showPopup1, setShowPopup1] = useState(false)
@@ -13,7 +14,6 @@ const Home = () => {
   return (
     // Put everything in a container
     <div className="relative min-h-screen w-screen flex justify-center items-center bg-white">
-
       {/* Center grainy */}
       <div className="absolute inset-0 justify-center flex items-center h-screen w-screen pt-24"> 
         <img 
@@ -22,7 +22,6 @@ const Home = () => {
           width={600} 
           className="pointer-events-none bg-white" />
       </div>
-
       <div className="grid grid-cols-2 grid-rows-2 w-full h-full mt-16 gap-6">
         {/* Card 1 */}
         <div 
