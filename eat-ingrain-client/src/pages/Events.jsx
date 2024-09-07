@@ -48,15 +48,16 @@ const Events = () => {
     <div className="flex flex-col min-h-screen">
       <div className="flex-grow">
         <div className="h-screen flex items-center justify-center">
-          <div className="relative flex flex-col justify-center items-center bg-neutral-950 h-full w-full p-16 mt-48 mb-48">
+          <div className="relative flex flex-col justify-center items-center bg-neutral-950 h-full w-full p-16">
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
                 backgroundImage: `url(${event_bg})`,
                 opacity: 0.2,
               }}
-            ></div>
-            <h1 className="md:text-xl font-bold mt-[calc(8rem+40px)] mb-4 text-white aesthet-nova text-4xl text-center">
+            >
+            </div>
+            <h1 className="text-2xl md:text-4xl font-bold mt-[calc(8rem+40px)] mb-4 text-white aesthet-nova text-center">
               JOIN US FOR OUR NEXT POPUP <br /> AT GOAL. BREWING
             </h1>
             <h4 className="text-white aesthet-nova-h2 mb-6 text-center text-xl">

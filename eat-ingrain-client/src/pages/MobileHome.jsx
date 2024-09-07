@@ -9,18 +9,18 @@ const MobileHome = () => {
 
   return (
     // Put everything in a container
-    <div className="flex justify-center items-center max-h-screen max-w-screen bg-white">
+    <div className="absolute top-0 z-0 flex justify-center items-center h-screen w-screen">
       {/* Center grainy */}
-      <div className="inset-0 justify-center flex items-center h-screen pt-12"> 
+      <div className="absolute top-0 flex justify-center items-center h-screen w-screen"> 
         <img 
           src={grainy} 
           alt="Character" 
           width={600} 
-          className="pointer-events-none bg-white" />
+          className="absolute top-0 mt-20 pointer-events-none" />
       </div>
       
       {/* Speech Bubbles */}
-      <div className="absolute flex justify-center items-center mt-96 pt-36 space-x-4">
+      <div className="absolute bottom-0 mb-10 flex space-x-4">
         <NavLink to="/about">
           <p className='speech-bubble-mobile aesthet-nova-h2'>About</p>
         </NavLink>

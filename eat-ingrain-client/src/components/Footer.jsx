@@ -4,7 +4,7 @@ import "../pages/Style.css"
 
 const Footer = () => {
   return (
-    <>
+    <div className="w-full relative bottom-0 mt-40">
       {/* Footer 1 */}
       <footer className="footer p-6 lighter-border text-base-content bg-ingrain-board-color">
         <div className="flex flex-row justify-between sm:justify-evenly w-full">
@@ -103,7 +103,7 @@ const Footer = () => {
           </nav>
         </div>
       </footer>
-    </>
+    </div>
   );
 };
 

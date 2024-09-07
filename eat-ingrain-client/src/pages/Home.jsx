@@ -3,7 +3,6 @@ import grainy from '../assets/transparentGrainy2.png'
 import { NavLink } from 'react-router-dom'
 import './speechbubble.css'
 import './Style.css'
-import Navbar from '../components/Navbar'
 
 const Home = () => {
   const [showPopup1, setShowPopup1] = useState(false)
@@ -15,7 +14,7 @@ const Home = () => {
     // Put everything in a container
     <div className="relative min-h-screen w-screen flex justify-center items-center bg-white">
       {/* Center grainy */}
-      <div className="absolute inset-0 justify-center flex items-center h-screen w-screen pt-24"> 
+      <div className="absolute inset-0 justify-center flex items-center h-screen w-screen"> 
         <img 
           src={grainy} 
           alt="Character" 
