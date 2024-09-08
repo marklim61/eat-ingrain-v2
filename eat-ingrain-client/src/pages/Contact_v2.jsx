@@ -43,8 +43,8 @@ const Contact_v2 = () => {
   const handleBlur = () => {};
 
   return (
-    <section className="flex lg:flex-row flex-col max-container items-center justify-center h-screen">
-      <div className="flex-1 flex flex-col items-center justify-center">
+    <section id="contact" className=" flex lg:flex-row flex-col max-container items-center justify-start mb-20">
+      <div className="flex-1 flex flex-col items-center justify-start">
         <div className="w-full max-w-xl p-6 bg-ingrain-board-color rounded-lg shadow-lg pt-10 pb-10">
           <h1 className="text-4xl mb-8 text-center text-bold aesthet-nova">
             Get in Touch
