@@ -18,10 +18,10 @@ const Home = () => {
       </div>
 
       <div className="grid grid-cols-2 grid-rows-2 w-full h-full mt-16 gap-6">
-        <SpeechBubble speech="About" position={"top-left-tail"} />
-        <SpeechBubble speech="Events" position={"top-right-tail"} />
-        <SpeechBubble speech="Shop" position={"bottom-left-tail"} />
-        <SpeechBubble speech="Contact" position={"bottom-right-tail"} />
+        <SpeechBubble speech="About" position={"top-left-tail"} link={"/about"} />
+        <SpeechBubble speech="Events" position={"top-right-tail"} link={"/events"} />
+        <SpeechBubble speech="Shop" position={"bottom-left-tail"} link={"/shop"}/>
+        <SpeechBubble speech="Contact" position={"bottom-right-tail"} link={"/contact"} />
       </div>
     </div>
   )
