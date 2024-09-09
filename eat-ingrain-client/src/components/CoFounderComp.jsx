@@ -10,7 +10,7 @@ const CoFounderComponent = () => {
     pariatur.
     `
 
-    return(
+    return (
         <div className="flex flex-col-reverse md:flex-row justify-evenly items-center m-6 md:m-24 bg-ingrain-board-color rounded-2xl drop-shadow-lg">
             <article className="prose lg:prose-2xl w-full md:w-1/4 mb-6 md:mb-0 pl-6 md:pl-0 pr-6 md:pr-0">
             <p className="aesthet-nova-h3">{placeholder}</p>
@@ -30,7 +30,7 @@ const CoFounderComponent = () => {
             </figcaption>
             </div>
         </div>
-  )
+    )
 }
 
 export default CoFounderComponent;
