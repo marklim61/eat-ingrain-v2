@@ -8,7 +8,8 @@ import Navbar from '../components/Navbar'
 const MobileHome = () => {
 
   return (
-    // Put everything in a container
+    <>
+    <Navbar/>
     <div className="absolute top-0 z-0 flex justify-center items-center h-screen w-screen">
       {/* Center grainy */}
       <div className="absolute top-0 flex justify-center items-center h-screen w-screen"> 
@@ -35,6 +36,7 @@ const MobileHome = () => {
         </NavLink>
       </div>
     </div>
+    </>
   )
 }
 
