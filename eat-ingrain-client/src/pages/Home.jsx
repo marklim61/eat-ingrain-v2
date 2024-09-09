@@ -3,11 +3,13 @@ import grainy from '../assets/transparentGrainy2.png'
 import './speechbubble.css'
 import './Style.css'
 import SpeechBubble from '../components/SpeechBubble'
+import Navbar from '../components/Navbar'
 
 const Home = () => {
   return (
-    // Put everything in a container
-  <div className="absolute top-0 z-0 flex justify-center items-center h-screen w-screen">
+    <>
+    <Navbar/>
+    <div className="absolute top-0 z-0 flex justify-center items-center h-screen w-screen">
       {/* Center grainy */}
       <div className="absolute top-0 flex justify-center items-center h-screen w-screen"> 
         <img 
@@ -24,6 +26,7 @@ const Home = () => {
         <SpeechBubble speech="Contact" position={"bottom-right-tail"} link={"/contact"} />
       </div>
     </div>
+    </>
   )
 }
 

@@ -93,7 +93,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-white">
       <Router>
-        <Navbar className="relative z-50" />
+        {/* <Navbar/> */}
         <div className="flex flex-col min-h-screen">
           <Routes>
             <Route path="/" element={isMobile ? <MobileHome /> : <Home />} />
