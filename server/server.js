@@ -4,6 +4,7 @@ const express = require("express");
 const { Client } = require("square");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const database = require("./database/connection");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -12,6 +13,19 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(cors({ origin: process.env.CLIENT_URL })); // Allow requests from this origin (5173)
+
+// Example route using the database
+app.get("/data", async (req, res) => {
+  try {
+    // Use the promise-based query method
+    await database.query("USE ingrain");
+    const [results, fields] = await database.query("SELECT * FROM test");
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: "Database query failed", details: err.message });
+  }
+});
+
 
 // Add this line to handle BigInt serialization
 BigInt.prototype.toJSON = function () {
