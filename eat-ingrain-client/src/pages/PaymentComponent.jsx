@@ -73,16 +73,36 @@ const PaymentComponent = ({ summary, cartItems }) => {
         setPaymentStatus({ success: true, result });
         navigate("/success");
       } else {
-        setPaymentStatus({
-          success: false,
-          error: result.error || "Unknown error",
-        });
+        handleError(result.errors || []);
       }
     } catch (error) {
-      setPaymentStatus({ success: false, error: error.message });
+      if (error.response && error.response.data && error.response.data.errors) {
+        handleError(error.response.data.errors);
+      } else {
+        setPaymentStatus({ success: false, error: "An unexpected error occurred." });
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleError = (errors) => {
+    const errorMessages = errors.map((error) => {
+      switch (error.code) {
+        case "CARD_DECLINED":
+          return "Your card was declined. Please try a different card.";
+        case "INSUFFICIENT_FUNDS":
+          return "You have insufficient funds. Please check your balance or try another card.";
+        case "INVALID_CARD":
+          return "The card information provided is invalid. Please double-check your details.";
+        case "EXPIRED_CARD":
+          return "Your card has expired. Please use a different card.";
+        default:
+          return error.detail || "An error occurred while processing your payment.";
+      }
+    });
+  
+    setPaymentStatus({ success: false, error: errorMessages.join(" ") });
   };
 
   return (
@@ -325,7 +345,7 @@ const PaymentComponent = ({ summary, cartItems }) => {
                       Payment Successful!
                     </div>
                   ) : (
-                    <div className="text-red-600">
+                    <div className="text-error">
                       Payment Failed: {paymentStatus.error}
                     </div>
                   )}
