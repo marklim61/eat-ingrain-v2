@@ -1,5 +1,5 @@
 require("dotenv").config();
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 const connectionPool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -9,18 +9,40 @@ const connectionPool = mysql.createPool({
 });
 
 const createDatabaseQuery = `CREATE DATABASE IF NOT EXISTS ingrain`;
+const useDatabaseQuery = `USE ingrain`;
+const createTableQuery = `CREATE TABLE IF NOT EXISTS orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  firstName VARCHAR(255) NOT NULL,
+  lastName VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  appartmentNumber VARCHAR(10),
+  city VARCHAR(100) NOT NULL,
+  country VARCHAR(20) NOT NULL,
+  state VARCHAR(10) NOT NULL,
+  zipCode VARCHAR(10) NOT NULL,
+  phoneNumber VARCHAR(20) NOT NULL
+)`;
 
-// Create database if it doesn't exist
-connectionPool.query(createDatabaseQuery, (err, result) => {
-  if (err) {
-    console.log("Error creating database:", err.message);
-  } else {
-    if (result.warningStatus === 0) {
-      console.log("Database 'ingrain' created and connected.");
-    } else {
-      console.log("Database 'ingrain' already exists. Connection established.");
-    }
+async function initializeDatabase() {
+  const connection = await connectionPool.getConnection();
+
+  try {
+    await connection.query(createDatabaseQuery);
+    console.log("Database 'ingrain' checked/created.");
+
+    await connection.query(useDatabaseQuery);
+    console.log("Connected to 'ingrain' database.");
+
+    await connection.query(createTableQuery);
+    console.log("Order table checked/created.");
+  } catch (err) {
+    console.error("Database initialization error:", err.message);
+  } finally {
+    connection.release();
   }
-});
+}
 
-module.exports = connectionPool.promise();
+initializeDatabase();
+
+module.exports = connectionPool;
