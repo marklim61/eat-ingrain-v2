@@ -29,7 +29,7 @@ const App = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 1366);
+      setIsMobile(window.innerWidth <= 1200);
     };
 
     window.addEventListener("resize", handleResize);
@@ -93,7 +93,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-white">
       <Router>
-        <Navbar />
+        {/* <Navbar/> */}
         <div className="flex flex-col min-h-screen">
           <Routes>
             <Route path="/" element={isMobile ? <MobileHome /> : <Home />} />

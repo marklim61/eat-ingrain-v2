@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import CartButton from "../components/CartButton";
 import CartModal from "./CartModal";
 import axios from "axios";
+import Navbar from "../components/Navbar";
 
 const Shop = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -12,6 +13,23 @@ const Shop = () => {
   const handleCartOpen = () => setIsCartOpen(true);
   const handleCartClose = () => setIsCartOpen(false);
 
+  // useEffect(() => {
+  //   // Fetch product data from the server using axios
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_BACKEND_URL}/store-items`
+  //       );
+  //       console.log(response.data);
+  //       setProducts(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error);
+  //     }
+  //   };
+
+  //   fetchProducts();
+  // }, []);
+
   useEffect(() => {
     // Fetch product data from the server using axios
     const fetchProducts = async () => {
@@ -19,21 +37,24 @@ const Shop = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/store-items`
         );
-        console.log(response.data);
-        setProducts(response.data);
+        console.log("Fetched products:", response.data); // Check the data structure here
+        setProducts(Array.isArray(response.data) ? response.data : []); // Ensure products is always an array
       } catch (error) {
         console.error("Error fetching products:", error);
+        setProducts([]); // Set products to an empty array in case of error
       }
     };
-
+  
     fetchProducts();
   }, []);
+  
 
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex-grow">
         <div className="h-screen flex items-center justify-center">
           <div className="relative flex flex-col justify-center items-center bg-neutral-950 h-full w-full p-16 mt-48 mb-48">
+            <Navbar />
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{

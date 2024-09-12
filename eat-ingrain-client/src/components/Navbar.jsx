@@ -4,12 +4,12 @@ import ingrain_Logo from '../assets/transparentINGRAIN.png'
 
 const Navbar = () => {
   return (
-    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10 mt-12">
+    <div className="relative w-full flex justify-center p-10 z-10">
         <NavLink to="/">
-          <img src={ingrain_Logo} alt="Logo" className="lg:h-32 md:h-16 sm:h-16 cursor-pointer" />
+          <img src={ingrain_Logo} alt="Logo" className="h-auto max-h-[8rem] min-h-[4rem] md:h-[calc(100vw/12)] sm:h-[calc(100vw/12)] cursor-pointer z-10" />
         </NavLink>
       </div>
   )
 }
 
-export default Navbar
+export default Navbar;

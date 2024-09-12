@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
+import Navbar from "../components/Navbar";
 
 const Contact_v2 = () => {
   const formRef = useRef(null);
@@ -43,9 +44,11 @@ const Contact_v2 = () => {
   const handleBlur = () => {};
 
   return (
-    <section className="flex lg:flex-row flex-col max-container items-center justify-center h-screen">
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="w-full max-w-xl p-6 bg-ingrain-board-color rounded-lg shadow-lg mt-32 pt-10 pb-10">
+    <>
+    <Navbar />
+    <section id="contact" className=" flex lg:flex-row flex-col max-container items-center justify-start mb-20">
+      <div className="flex-1 flex flex-col items-center justify-start">
+        <div className="w-full max-w-xl p-6 bg-ingrain-board-color rounded-lg shadow-lg pt-10 pb-10">
           <h1 className="text-4xl mb-8 text-center text-bold aesthet-nova">
             Get in Touch
           </h1>
@@ -108,6 +111,7 @@ const Contact_v2 = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 
