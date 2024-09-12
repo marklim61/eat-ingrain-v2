@@ -10,7 +10,8 @@ const connectionPool = mysql.createPool({
 
 const createDatabaseQuery = `CREATE DATABASE IF NOT EXISTS ingrain`;
 const useDatabaseQuery = `USE ingrain`;
-const createTableQuery = `CREATE TABLE IF NOT EXISTS orders (
+const createTableQuery = `
+CREATE TABLE IF NOT EXISTS orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
   firstName VARCHAR(255) NOT NULL,
   lastName VARCHAR(255) NOT NULL,
@@ -21,7 +22,9 @@ const createTableQuery = `CREATE TABLE IF NOT EXISTS orders (
   country VARCHAR(20) NOT NULL,
   state VARCHAR(10) NOT NULL,
   zipCode VARCHAR(10) NOT NULL,
-  phoneNumber VARCHAR(20) NOT NULL
+  phoneNumber VARCHAR(20) NOT NULL,
+  status VARCHAR(20) NOT NULL,
+  dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP
 )`;
 
 async function initializeDatabase() {

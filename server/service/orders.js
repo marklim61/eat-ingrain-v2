@@ -4,9 +4,9 @@ const order = async (firstName, lastName, email, address, appartmentNumber, city
     // Use parameterized query to avoid SQL injection
     const orderQuery = `
         INSERT INTO orders 
-        (firstName, lastName, email, address, appartmentNumber, city, country, state, zipCode, phoneNumber) 
+        (firstName, lastName, email, address, appartmentNumber, city, country, state, zipCode, phoneNumber, status) 
         VALUES 
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
     `;
 
     try {
