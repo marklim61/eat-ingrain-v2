@@ -26,17 +26,25 @@ const getEvents = async () => {
     }
 }
 
-const updateEvent = async (id, title, nameOfPlace, address, date, time, image, description) => {
-    // Use parameterized query to avoid SQL injection
-    const eventQuery = `
-        UPDATE events 
-        SET title = ?, nameOfPlace = ?, address = ?, date = ?, time = ?, image = ?, description = ? 
-        WHERE id = ?
-    `;
+const updateEvent = async (id, updates = {}) => {
+    const queryParams = [id];
+
+    // Create a string representing the fields to update in the query.
+    const setClause = Object.keys(updates).map(key => `${key} = ?`).join(', ');
+    const query = `UPDATE events SET ${setClause} WHERE id = ?`;
 
     try {
-        await database.query(eventQuery, [title, nameOfPlace, address, date, time, image, description, id]);
+        await database.query(query, [...Object.values(updates), ...queryParams]);
         return {message: "Event updated successfully"};
+    } catch (err) {
+        return {error: err.message};
+    }
+}
+
+const deleteEvent = async (id) => {
+    try {
+        await database.query("DELETE FROM events WHERE id = ?", [id]);
+        return {message: "Event deleted successfully"};
     } catch (err) {
         return {error: err.message};
     }
@@ -45,5 +53,6 @@ const updateEvent = async (id, title, nameOfPlace, address, date, time, image, d
 module.exports = {
     createEvent,
     getEvents,
-    updateEvent
+    updateEvent,
+    deleteEvent
 }

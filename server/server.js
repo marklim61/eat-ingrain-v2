@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const {swaggerDocs} = require('./swagger/swaggerDocs');
 const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
-const { createEvent, getEvents, updateEvent } = require("./service/events");
+const { createEvent, getEvents, updateEvent, deleteEvent } = require("./service/events");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -227,13 +227,15 @@ app.post('/remove-order-by-phone-number', async (req, res) => {
  *               address:
  *                 type: string
  *               date:
- *                 type: date (YYYY-MM-DD)
+ *                 type: string 
+ *                 format: date
  *               time:
  *                 type: string
  *               image:
- *                 type: blob
+ *                 type: string
+ *                 format: blob
  *               description:
- *                 type: string (max 500 characters)
+ *                 type: string
  *     responses:
  *       200:
  *         description: Event created successfully
@@ -247,6 +249,16 @@ app.post('/create-event', async (req, res) => {
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: "Failed to create event", details: err.message });
+  }
+})
+
+app.post('/delete-event', async (req, res) => {
+  const { id } = req.body;
+  try {
+    const result = await deleteEvent(id);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete event", details: err.message });
   }
 })
 //--------------------end of post endpoints----------------------------------------
@@ -289,9 +301,14 @@ app.post('/create-event', async (req, res) => {
  *         description: Failed to update event
  */
 app.patch('/update-event', async (req, res) => {
-  const { id, title, nameOfPlace, address, date, time, image, description } = req.body;
+  const { id, ...updateFields } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "Event ID is required" });
+  }
+
   try {
-    const result = await updateEvent(id, title, nameOfPlace, address, date, time, image, description);
+    const result = await updateEvent(id, updateFields);
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: "Failed to update event", details: err.message });
