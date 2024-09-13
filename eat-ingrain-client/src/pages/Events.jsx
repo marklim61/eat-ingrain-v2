@@ -26,10 +26,6 @@ const Events = () => {
     fetchEvents();
   }, []);
 
-  for (let i = 0; i < events.length; i++) {
-    console.log(i % 2 === 0 ? 'timeline-end' : 'timeline-start')
-  }
-
   return (
     <>
       <div id="container1" className="relative">
