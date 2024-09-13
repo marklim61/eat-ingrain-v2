@@ -13,20 +13,6 @@ const Events = () => {
   const eventDate = useMemo(() => new Date("2024-08-22T00:00:00"), []);
   const [events, setEvents] = useState([]);
 
-  const event1Desc = `
-    We are back for da summer and officially popping up at
-    @goalxbrewing on Sunday, June 23 from 2pm - sellout! Come by
-    for some solid beers and kick it with us on their outside
-    patio. Thank you all for your patience and continued support
-  `
-  const event2Desc = `
-    Celebrated Asian American and Pacific Islander Heritage Month.
-    INGRAIN at @puremiramar NEW MENU ITEMS & KICK OFF @purebrewing
-    STRAWBERRY FEST RICE, BEER, HERITAGE
-  `
-
-  const event3Desc = `First ever plates at @nightparadebrewing`
-
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -69,7 +55,7 @@ const Events = () => {
       <div id="container2" className="relative flex items-center justify-center p-4 pl-3 md:p-12 mb-24 mt-24 rounded-xl max-w-screen md:max-w-7xl mx-auto md:drop-shadow-2xl drop-shadow-xl bg-ingrain-board-color">
         <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
           {events.map((event, index) => (
-            <li key={index}> 
+            <li key={index} id={event.id}> 
               <EventTimeline 
                 eventDate={new Date(event.date).toDateString()} 
                 eventTitle={event.title} 
@@ -79,36 +65,6 @@ const Events = () => {
               />
             </li>
           ))}
-          {/* <li> 
-            <EventTimeline 
-            eventDate={'June 23 2024'} 
-            eventTitle={'POPUP AT GOAL. BREWING'} 
-            eventDescription={event1Desc}
-            eventImage={goalxbrewing} 
-            imagePosition={'timeline-end'}
-            textPosition={'timeline-start'}
-            textAlign={'text-end'}/>
-          </li>
-          <li> 
-            <EventTimeline 
-            eventDate={'May 22 2024'} 
-            eventTitle={'Pure Project Miramar'} 
-            eventDescription={event2Desc}
-            eventImage={pure_project} 
-            imagePosition={'timeline-start'}
-            textPosition={'timeline-end'}
-            textAlign={'text-start'}/>
-          </li>
-          <li> 
-            <EventTimeline 
-            eventDate={'November 18 2023'} 
-            eventTitle={'Night Parade Brewing Co.'} 
-            eventDescription={event3Desc}
-            eventImage={night_parade} 
-            imagePosition={'timeline-end'}
-            textPosition={'timeline-start'}
-            textAlign={'text-end'}/>
-          </li> */}
         </ul>
       </div>
     </>

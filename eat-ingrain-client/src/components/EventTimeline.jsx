@@ -4,9 +4,6 @@ const EventTimeline = ({
     eventDescription,
     eventImage,
     index
-    // imagePosition,
-    // textPosition,
-    // textAlign,
   }) => {
     const imagePosition = index % 2 === 0 ? 'timeline-end' : 'timeline-start';
     const textPosition = index % 2 === 0 ? 'timeline-start' : 'timeline-end';
