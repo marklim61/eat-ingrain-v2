@@ -4,8 +4,9 @@ const express = require("express");
 const { Client } = require("square");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
 const {swaggerDocs} = require('./swagger/swaggerDocs');
+const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
+const { createEvent, getEvents, updateEvent } = require("./service/events");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -61,6 +62,26 @@ app.get("/get-orders/:phoneNumber", async (req, res) => {
     res.status(200).json(orders);
   } catch (err) {
     res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-events:
+ *   get:
+ *     summary: Get all events
+ *     responses:
+ *       200:
+ *         description: Returns an array of events
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-events", async (req, res) => {
+  try {
+    const events = await getEvents();
+    res.status(200).json(events);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get events", details: err.message });
   }
 })
 // --------------------end of get endpoints----------------------------------------
@@ -187,7 +208,97 @@ app.post('/remove-order-by-phone-number', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /create-event:
+ *   post:
+ *     summary: Create an event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               nameOfPlace:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               date:
+ *                 type: date (YYYY-MM-DD)
+ *               time:
+ *                 type: string
+ *               image:
+ *                 type: blob
+ *               description:
+ *                 type: string (max 500 characters)
+ *     responses:
+ *       200:
+ *         description: Event created successfully
+ *       500:
+ *         description: Failed to create event
+ */
+app.post('/create-event', async (req, res) => {
+  const { title, nameOfPlace, address, date, time, image, description } = req.body;
+  try {
+    const result = await createEvent(title, nameOfPlace, address, date, time, image, description);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create event", details: err.message });
+  }
+})
 //--------------------end of post endpoints----------------------------------------
+
+//--------------------update endpoints----------------------------------------
+/**
+ * @openapi
+ * /update-event:
+ *   patch:
+ *     summary: Update an event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               title:
+ *                 type: string
+ *               nameOfPlace:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date
+ *               time:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: blob
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Event updated successfully
+ *       500:
+ *         description: Failed to update event
+ */
+app.patch('/update-event', async (req, res) => {
+  const { id, title, nameOfPlace, address, date, time, image, description } = req.body;
+  try {
+    const result = await updateEvent(id, title, nameOfPlace, address, date, time, image, description);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update event", details: err.message });
+  }
+});
+
+//--------------------end of update endpoints----------------------------------------
 
 // Add this line to handle BigInt serialization
 BigInt.prototype.toJSON = function () {
