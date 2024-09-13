@@ -3,10 +3,15 @@ const EventTimeline = ({
     eventTitle,
     eventDescription,
     eventImage,
-    imagePosition,
-    textPosition,
-    textAlign,
+    index
+    // imagePosition,
+    // textPosition,
+    // textAlign,
   }) => {
+    const imagePosition = index % 2 === 0 ? 'timeline-end' : 'timeline-start';
+    const textPosition = index % 2 === 0 ? 'timeline-start' : 'timeline-end';
+    const textAlign = index % 2 === 0 ? 'text-end' : 'text-start';
+
     return (
       <>
         <div className={`${imagePosition} hidden md:inline`}>

@@ -79,6 +79,10 @@ app.get("/get-orders/:phoneNumber", async (req, res) => {
 app.get("/get-events", async (req, res) => {
   try {
     const events = await getEvents();
+
+    // Reverse the order of the events to get the most recent events first
+    await events.reverse();   
+
     res.status(200).json(events);
   } catch (err) {
     res.status(500).json({ error: "Failed to get events", details: err.message });
