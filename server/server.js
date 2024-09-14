@@ -1,12 +1,13 @@
 require("dotenv").config();
 
 const express = require("express");
+const initializeDatabase = require('./database/initialize');
 const { Client } = require("square");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const {swaggerDocs} = require('./swagger/swaggerDocs');
 const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
-const { createEvent, getEvents, updateEvent, deleteEvent } = require("./service/events");
+const { createEvent, getEvents, getPastEvents, getUpcomingEvents, updateEvent, deleteEvent } = require("./service/events");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -79,10 +80,46 @@ app.get("/get-orders/:phoneNumber", async (req, res) => {
 app.get("/get-events", async (req, res) => {
   try {
     const events = await getEvents();
+    res.status(200).json(events);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get events", details: err.message });
+  }
+})
 
-    // Reverse the order of the events to get the most recent events first
-    await events.reverse();   
+/**
+ * @openapi
+ * /get-past-events:
+ *   get:
+ *     summary: Get all past events
+ *     responses:
+ *       200:
+ *         description: Returns an array of events
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-past-events", async (req, res) => {
+  try {
+    const events = await getPastEvents();
+    res.status(200).json(events);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get events", details: err.message });
+  }
+})
 
+/**
+ * @openapi
+ * /get-upcoming-events:
+ *   get:
+ *     summary: Get all upcoming events
+ *     responses:
+ *       200:
+ *         description: Returns an array of events
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-upcoming-events", async (req, res) => {
+  try {
+    const events = await getUpcomingEvents(); 
     res.status(200).json(events);
   } catch (err) {
     res.status(500).json({ error: "Failed to get events", details: err.message });
@@ -403,7 +440,18 @@ app.post("/api/submitPayment", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-  swaggerDocs(app);
+// app.listen(port, () => {
+//   console.log(`Server is running on http://localhost:${port}`);
+//   swaggerDocs(app);
+// });
+
+initializeDatabase()
+.then(() => {
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+    swaggerDocs(app);
+  });
+}).catch(err => {
+  console.error("Error during server startup:", err.message);
+  process.exit(1); // Exit the process with an error code if initialization fails
 });

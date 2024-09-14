@@ -1,6 +1,8 @@
-const database = require('../database/connection'); // Ensure this is the correct path to your database connection
+const connectionPool = require('../database/connection');
 
 const order = async (firstName, lastName, email, address, appartmentNumber, city, country, state, zipCode, phoneNumber) => {
+    const database = await connectionPool.getConnection();
+    
     // Use parameterized query to avoid SQL injection
     const orderQuery = `
         INSERT INTO orders 
@@ -18,6 +20,8 @@ const order = async (firstName, lastName, email, address, appartmentNumber, city
 };
 
 const getOrders = async () => {
+    const database = await connectionPool.getConnection();
+
     try {
         const orders = await database.query("SELECT * FROM orders");
         return orders[0];
@@ -27,6 +31,8 @@ const getOrders = async () => {
 };
 
 const getOrdersByPhoneNumber = async (phoneNumber) => {
+    const database = await connectionPool.getConnection();
+
     try {
         const orders = await database.query("SELECT * FROM orders WHERE phoneNumber = ?", [phoneNumber]);
         return orders[0];
@@ -36,6 +42,8 @@ const getOrdersByPhoneNumber = async (phoneNumber) => {
 };
 
 const removeOrderById = async (id) => {
+    const database = await connectionPool.getConnection();
+
     try {
         await database.query("DELETE FROM orders WHERE id = ?", [id]);
         return {message: "Order removed successfully"};
@@ -45,6 +53,8 @@ const removeOrderById = async (id) => {
 };
 
 const removeOrderByPhoneNumber = async (phoneNumber) => {
+    const database = await connectionPool.getConnection();
+    
     try {
         await database.query("DELETE FROM orders WHERE phoneNumber = ?", [phoneNumber]);
         return {message: "Order removed successfully"};
