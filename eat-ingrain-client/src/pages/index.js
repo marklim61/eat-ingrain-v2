@@ -1,14 +1,12 @@
-import Home from "./Home";
-import MobileHome from "./MobileHome";
-import About from "./About";
-import Events from "./Events";
-// import Contact from './Contact'
-import Contact from "./Contact_v2";
-import Shop from "./Shop";
-import ProductDetail from "./ProductDetail";
-import CartModal from "./CartModal";
-import ShoppingCart from "./ShoppingCart";
-import PaymentComponent from "./PaymentComponent"
-import SuccessPage from "./SuccessPage";
-
-export { Home, MobileHome, About, Events, Contact, Shop, ProductDetail, CartModal, ShoppingCart, PaymentComponent, SuccessPage };
+export { default as Home } from './Home';
+export { default as MobileHome } from './MobileHome';
+export { default as About } from './About';
+export { default as Events } from './Events';
+export { default as Contact } from './Contact_v2';
+export { default as Shop } from './Shop';
+export { default as ProductDetail } from './ProductDetail';
+export { default as CartModal } from './CartModal';
+export { default as ShoppingCart } from './ShoppingCart';
+export { default as PaymentComponent } from './PaymentComponent';
+export { default as SuccessPage } from './SuccessPage';
+export { default as AdminDashboard } from './AdminDashboard';
