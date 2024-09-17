@@ -16,6 +16,8 @@ const order = async (firstName, lastName, email, address, appartmentNumber, city
         return {message: "Order placed successfully"};
     } catch (err) {
         return {error: err.message};
+    } finally {
+        database.release();
     }
 };
 
@@ -27,6 +29,8 @@ const getOrders = async () => {
         return orders[0];
     } catch (err) {
         return {error: err.message};
+    } finally {
+        database.release();
     }
 };
 
@@ -38,6 +42,8 @@ const getOrdersByPhoneNumber = async (phoneNumber) => {
         return orders[0];
     } catch (err) {
         return {error: err.message};
+    } finally {
+        database.release();
     }
 };
 
@@ -49,6 +55,8 @@ const removeOrderById = async (id) => {
         return {message: "Order removed successfully"};
     } catch (err) {
         return {error: err.message};
+    } finally {
+        database.release();
     }
 };
 
@@ -60,6 +68,8 @@ const removeOrderByPhoneNumber = async (phoneNumber) => {
         return {message: "Order removed successfully"};
     } catch (err) {
         return {error: err.message};
+    } finally {
+        database.release();
     }
 };
 
