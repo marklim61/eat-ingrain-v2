@@ -4,6 +4,8 @@ const express = require("express");
 const { Client } = require("square");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
+const {swaggerDocs} = require('./swagger/swaggerDocs');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -12,6 +14,180 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(cors({ origin: process.env.CLIENT_URL })); // Allow requests from this origin (5173)
+
+
+// --------------------Get endpoints----------------------------------------
+/**
+ * @openapi
+ * /get-orders:
+ *   get:
+ *     summary: Get all orders
+ *     responses:
+ *       200:
+ *         description: Returns an array of orders
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-orders", async (req, res) => {
+  try {
+    const orders = await getOrders();
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /get-orders/{phoneNumber}:
+ *   get:
+ *     summary: Get orders by phone number
+ *     parameters:
+ *       - in: path
+ *         name: phoneNumber
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The phone number of the customer
+ *     responses:
+ *       200:
+ *         description: Returns an array of orders
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-orders/:phoneNumber", async (req, res) => {
+  try {
+    const orders = await getOrdersByPhoneNumber(req.params.phoneNumber);
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
+// --------------------end of get endpoints----------------------------------------
+
+// --------------------Post endpoints----------------------------------------
+/**
+ * @openapi
+ * /create-order:
+ *   post:
+ *     summary: Create an order
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               appartmentNumber:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               zipCode:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Order created successfully
+ *       500:
+ *         description: Failed to create order
+ */
+app.post('/create-order', async (req, res) => {
+  const { firstName, lastName, email, address, appartmentNumber, city, country, state, zipCode, phoneNumber } = req.body;
+
+  try {
+      const result = await order(firstName, lastName, email, address, appartmentNumber, city, country, state, zipCode, phoneNumber);
+      if (result.error) {
+          res.status(500).json(result);
+      } else {
+          res.status(200).json(result);
+      }
+  } catch (err) {
+      res.status(500).json({ error: "Failed to create order", details: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /remove-order:
+ *   post:
+ *     summary: Remove an order
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Order removed successfully
+ *       500:
+ *         description: Failed to remove order
+ */
+app.post('/remove-order', async (req, res) => {
+  const { id } = req.body;
+  try {
+      const result = await removeOrderById(id);
+      if (result.error) {
+          res.status(500).json(result);
+      } else {
+          res.status(200).json(result);
+      }
+  } catch (err) {
+      res.status(500).json({ error: "Failed to remove order", details: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /remove-order-by-phone-number:
+ *   post:
+ *     summary: Remove an order by phone number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phoneNumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Order removed successfully
+ *       500:
+ *         description: Failed to remove order
+ */
+app.post('/remove-order-by-phone-number', async (req, res) => {
+  const { phoneNumber } = req.body;
+  try {
+      const result = await removeOrderByPhoneNumber(phoneNumber);
+      if (result.error) {
+          res.status(500).json(result);
+      } else {
+          res.status(200).json(result);
+      }
+  } catch (err) {
+      res.status(500).json({ error: "Failed to remove order", details: err.message });
+  }
+});
+
+//--------------------end of post endpoints----------------------------------------
 
 // Add this line to handle BigInt serialization
 BigInt.prototype.toJSON = function () {
@@ -97,4 +273,5 @@ app.post("/api/submitPayment", async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
+  swaggerDocs(app);
 });
