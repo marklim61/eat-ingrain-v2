@@ -19,6 +19,8 @@ import {
   SuccessPage,
   AdminDashboard,
   AdminEvents,
+  AdminOrders,
+  AdminInventory,
 } from "./pages/index";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -105,6 +107,8 @@ const App = () => {
             <Route path="/shop" element={<Shop />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/events" element={<AdminEvents />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/inventory" element={<AdminInventory />} />
             <Route
               path="/product/:id"
               element={<ProductDetail addToCart={addToCart} />}

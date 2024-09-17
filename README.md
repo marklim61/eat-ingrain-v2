@@ -35,6 +35,7 @@ b. Install dependencies
 	- react-tooltip
 	- email.js
 	- axios
+	- react-table
 
 c. Start the development app
 	npm run dev

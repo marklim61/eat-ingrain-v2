@@ -12,10 +12,19 @@ const Navbar = () => {
       <NavLink to="/admin">
         <img src={IngrainLogo} alt="Logo" className="h-10" />
       </NavLink>
+      {/* <Route path="/admin/events" element={<AdminEvents />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/inventory" element={<AdminInventory />} /> */}
       <div className="flex sm:flex-row flex-col gap-10">
-        <Button name="Inventory" style={buttonStyle}/>
-        <Button name="Events" style={buttonStyle}/>
-        <Button name="Orders" style={buttonStyle}/>
+        <NavLink to="/admin/inventory">
+          <Button name="Inventory" style={buttonStyle}/>
+        </NavLink>
+        <NavLink to="/admin/events">
+          <Button name="Events" style={buttonStyle}/>
+        </NavLink>
+        <NavLink to="/admin/orders">
+          <Button name="Orders" style={buttonStyle}/>
+        </NavLink>
         <Dropdown /> 
       </div>
     </div>

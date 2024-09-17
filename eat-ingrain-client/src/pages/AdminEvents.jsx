@@ -1,9 +1,8 @@
 import AdminNavbar from "../components/AdminNavBar"
 import React, { useState, useEffect } from "react"
-import {useTable} from "react-table";
-import EditIcon from "../assets/edit.png"
 import Button from "../components/Button";
 import Table from "../components/Table";
+import { EventsData, EventsColumns, EventsMobileData, EventsMobileColumns } from "./FakeData";
 
 const AdminEvents = () => {
     const tabsStyle = "relative z-0 block w-[100px] border-2 border-[#83AF9B] bg-[#ECE5CE]"
@@ -74,7 +73,7 @@ const AdminEvents = () => {
                     <Button name="Past" style={tabsStyle}/>
                 </div>
                 {isMobile ? 
-                    <Table columns={mobileColumns} data={mobileData} /> : <Table columns={columns} data={data} />
+                    <Table columns={EventsMobileColumns} data={EventsMobileData} /> : <Table columns={EventsColumns} data={EventsData} />
                 }
                 <div className="flex flex-wrap gap-10 items-end justify-end pr-5">
                     <Button name="Add" style={buttonStyle}/>
