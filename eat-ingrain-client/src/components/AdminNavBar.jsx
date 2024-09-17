@@ -12,9 +12,6 @@ const Navbar = () => {
       <NavLink to="/admin">
         <img src={IngrainLogo} alt="Logo" className="h-10" />
       </NavLink>
-      {/* <Route path="/admin/events" element={<AdminEvents />} />
-            <Route path="/admin/orders" element={<AdminOrders />} />
-            <Route path="/admin/inventory" element={<AdminInventory />} /> */}
       <div className="flex sm:flex-row flex-col gap-10">
         <NavLink to="/admin/inventory">
           <Button name="Inventory" style={buttonStyle}/>

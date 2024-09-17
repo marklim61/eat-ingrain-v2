@@ -7,48 +7,8 @@ import { EventsData, EventsColumns, EventsMobileData, EventsMobileColumns } from
 const AdminEvents = () => {
     const tabsStyle = "relative z-0 block w-[100px] border-2 border-[#83AF9B] bg-[#ECE5CE]"
     const buttonStyle = "relative z-0 block w-[100px] border border-[#83AF9B] rounded-md shadow-sm shadow-[#83AF9B] bg-[#ECE5CE]"
-    const data = React.useMemo(
-        () => [
-            { id: 1, title: "Test", nameOfPlace: "Test", address: "Test", date: "Test", time: "Test", description: "Test", dateCreated: "Test", image: "Test" },
-            { id: 2, title: "Test", nameOfPlace: "Test", address: "Test", date: "Test", time: "Test", description: "Test", dateCreated: "Test", image: "Test" },
-            { id: 3, title: "Test", nameOfPlace: "Test", address: "Test", date: "Test", time: "Test", description: "laskdjflkasdlfjlasdjflasdjdsalkjflkasdjlkasdflasdldkfalk;sdjflasdjflk;sadlfasdlk;fjaslkdjflkasdjlkdasjfldajflk", dateCreated: "Test", image: "Test" },
-        ],
-        []
-    );
-
-    const columns = React.useMemo(
-        () => [
-            { Header: "Id", accessor: "id" },
-            { Header: "Title", accessor: "title" },
-            { Header: "Place", accessor: "nameOfPlace" },
-            { Header: "Address", accessor: "address" },
-            { Header: "Date", accessor: "date" },
-            { Header: "Time", accessor: "time" },
-            { Header: "Description", accessor: "description" },
-            { Header: "Date Created", accessor: "dateCreated" },
-            { Header: "Image", accessor: "image" },
-        ],
-        []
-    );
-
-    const mobileData = React.useMemo(
-        () => [
-            { id: 1, title: "Test", description: "Test"},
-            { id: 2, title: "Test", description: "alsdjflsajfjaksdljfklasjdlkfjasjflkasdjflk;kasddjflkdsa"},
-        ],
-        []
-    );
-
-    const mobileColumns = React.useMemo(
-        () => [
-            { Header: "Id", accessor: "id" },
-            { Header: "Title", accessor: "title" },
-            { Header: "Description", accessor: "description" },
-        ],
-        []
-    );
-
     const [isMobile, setIsMobile] = useState(false);
+    
     const handleResize = () => {
         if (window.innerWidth < 800) {
             setIsMobile(true);
