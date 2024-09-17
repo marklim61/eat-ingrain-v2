@@ -10,3 +10,4 @@ export { default as ShoppingCart } from './ShoppingCart';
 export { default as PaymentComponent } from './PaymentComponent';
 export { default as SuccessPage } from './SuccessPage';
 export { default as AdminDashboard } from './AdminDashboard';
+export { default as AdminEvents } from './AdminEvents.jsx';
