@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import React, { useState, useEffect, lazy, Suspense, startTransition } from "react";
 import pure_project from "../assets/Ingrain_Background.jpg";
 import night_parade from "../assets/instagram_gallery/firstpopup_v2.jpg";
 import goalxbrewing from "../assets/instagram_gallery/secondpopup_v3.jpg";
@@ -14,6 +14,7 @@ const EventTimeline = lazy(() => import("../components/EventTimeline"));
 const Events = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   const fetchWithRetry = async (url, retries = 3) => {
     for (let i = 0; i < retries; i++) {
@@ -32,17 +33,21 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetchWithRetry("http://localhost:3001/get-upcoming-events");
-        // const data = await res.json();
-        setUpcomingEvents(res);
+        setIsLoading(true); // Start loading
+        startTransition(async () => {
+          const res = await fetchWithRetry("http://localhost:3001/get-upcoming-events");
+          setUpcomingEvents(res);
+          setIsLoading(false); // Stop loading
+        });
       } catch (err) {
         console.error(err);
+        setIsLoading(false); // Stop loading on error
       }
     };
     fetchEvents();
   }, []);
 
-  function upcomingEvent () {
+  const upcomingEvent = () => {
     const eventDate = new Date(upcomingEvents[0]?.date);
     return (
       <div id="container1" className="relative">
@@ -67,24 +72,22 @@ const Events = () => {
         </Suspense>
       </div>
     );
-  }
+  };
 
-  const noUpcomingEvents = () => {
-    return (
-      <div id="container1" className="relative">
-        <Navbar/>
-        <BackgroundBanner bgImage={event_bg} />
-        <div className="relative z-1 flex flex-col justify-center items-center mb-24 p-12">
-          <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
-            NO UPCOMING EVENTS
-          </h1>
-        </div>
+  const noUpcomingEvents = () => (
+    <div id="container1" className="relative">
+      <Navbar/>
+      <BackgroundBanner bgImage={event_bg} />
+      <div className="relative z-1 flex flex-col justify-center items-center mb-24 p-12">
+        <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
+          NO UPCOMING EVENTS
+        </h1>
       </div>
-    );
-  }
+    </div>
+  );
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchPastEvents = async () => {
       try {
         const res = await fetchWithRetry("http://localhost:3001/get-past-events");
         setPastEvents(res);
@@ -92,15 +95,19 @@ const Events = () => {
         console.error(err);
       }
     };
-    fetchEvents();
+    fetchPastEvents();
   }, []);
+
+  if (isLoading) {
+    return <div>Loading events...</div>; // Show loading spinner if necessary
+  }
 
   return (
     <>
       {upcomingEvents.length > 0 ? upcomingEvent() : noUpcomingEvents()}
 
       <div id="container2" className="relative flex items-center justify-center p-4 pl-3 md:p-12 mb-24 mt-24 rounded-xl max-w-screen md:max-w-7xl mx-auto md:drop-shadow-2xl drop-shadow-xl bg-ingrain-board-color">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>Loading timeline...</div>}>
           <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
             {pastEvents.map((event, index) => (
               <li key={index} id={event.id}> 
@@ -109,7 +116,7 @@ const Events = () => {
                   eventTitle={event.title} 
                   eventDescription={event.description}
                   eventImage={event.image} 
-                  index = {index}
+                  index={index}
                 />
               </li>
             ))}
@@ -117,8 +124,7 @@ const Events = () => {
         </Suspense>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default Events;
-
