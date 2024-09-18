@@ -1,11 +1,13 @@
 require("dotenv").config();
 
 const express = require("express");
+const initializeDatabase = require('./database/initialize');
 const { Client } = require("square");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
 const {swaggerDocs} = require('./swagger/swaggerDocs');
+const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
+const { createEvent, getEvents, getPastEvents, getUpcomingEvents, updateEvent, deleteEvent } = require("./service/events");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -61,6 +63,66 @@ app.get("/get-orders/:phoneNumber", async (req, res) => {
     res.status(200).json(orders);
   } catch (err) {
     res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-events:
+ *   get:
+ *     summary: Get all events
+ *     responses:
+ *       200:
+ *         description: Returns an array of events
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-events", async (req, res) => {
+  try {
+    const events = await getEvents();
+    res.status(200).json(events);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get events", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-past-events:
+ *   get:
+ *     summary: Get all past events
+ *     responses:
+ *       200:
+ *         description: Returns an array of events
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-past-events", async (req, res) => {
+  try {
+    const events = await getPastEvents();
+    res.status(200).json(events);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get events", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-upcoming-events:
+ *   get:
+ *     summary: Get all upcoming events
+ *     responses:
+ *       200:
+ *         description: Returns an array of events
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-upcoming-events", async (req, res) => {
+  try {
+    const events = await getUpcomingEvents(); 
+    res.status(200).json(events);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get events", details: err.message });
   }
 })
 // --------------------end of get endpoints----------------------------------------
@@ -187,7 +249,114 @@ app.post('/remove-order-by-phone-number', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /create-event:
+ *   post:
+ *     summary: Create an event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               nameOfPlace:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               date:
+ *                 type: string 
+ *                 format: date
+ *               time:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: blob
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Event created successfully
+ *       500:
+ *         description: Failed to create event
+ */
+app.post('/create-event', async (req, res) => {
+  const { title, nameOfPlace, address, date, time, image, description } = req.body;
+  try {
+    const result = await createEvent(title, nameOfPlace, address, date, time, image, description);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create event", details: err.message });
+  }
+})
+
+app.post('/delete-event', async (req, res) => {
+  const { id } = req.body;
+  try {
+    const result = await deleteEvent(id);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete event", details: err.message });
+  }
+})
 //--------------------end of post endpoints----------------------------------------
+
+//--------------------update endpoints----------------------------------------
+/**
+ * @openapi
+ * /update-event:
+ *   patch:
+ *     summary: Update an event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               title:
+ *                 type: string
+ *               nameOfPlace:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date
+ *               time:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: blob
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Event updated successfully
+ *       500:
+ *         description: Failed to update event
+ */
+app.patch('/update-event', async (req, res) => {
+  const { id, ...updateFields } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "Event ID is required" });
+  }
+
+  try {
+    const result = await updateEvent(id, updateFields);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update event", details: err.message });
+  }
+});
+
+//--------------------end of update endpoints----------------------------------------
 
 // Add this line to handle BigInt serialization
 BigInt.prototype.toJSON = function () {
@@ -271,7 +440,18 @@ app.post("/api/submitPayment", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-  swaggerDocs(app);
+// app.listen(port, () => {
+//   console.log(`Server is running on http://localhost:${port}`);
+//   swaggerDocs(app);
+// });
+
+initializeDatabase()
+.then(() => {
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+    swaggerDocs(app);
+  });
+}).catch(err => {
+  console.error("Error during server startup:", err.message);
+  process.exit(1); // Exit the process with an error code if initialization fails
 });
