@@ -17,6 +17,7 @@ import {
   ShoppingCart,
   PaymentComponent,
   SuccessPage,
+  AdminDashboard,
 } from "./pages/index";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -101,6 +102,7 @@ const App = () => {
             <Route path="/events" element={<Events />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route
               path="/product/:id"
               element={<ProductDetail addToCart={addToCart} />}
