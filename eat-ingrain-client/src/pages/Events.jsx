@@ -1,7 +1,4 @@
-import React, { useState, useEffect, lazy } from "react";
-import pure_project from "../assets/Ingrain_Background.jpg";
-import night_parade from "../assets/instagram_gallery/firstpopup_v2.jpg";
-import goalxbrewing from "../assets/instagram_gallery/secondpopup_v3.jpg";
+import React, { useState, useEffect } from "react";
 import "./Style.css";
 import event_bg from "../assets/instagram_gallery/event_BG.jpg";
 import EventTimer from "../components/EventTimer";
