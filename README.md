@@ -49,11 +49,17 @@ c. Start the development app
 - User authentication (if applicable)
 - Order management and tracking
 
+Requirement (for developers)	
+- mySql and mySql workbench (needs to be installed in your local machine)
+	- [link](https://dev.mysql.com/downloads/installer/)
+
 a. Navigate to the project directory
 	cd server
 
 b. Install dependencies
-	npm install express cors dotenv square nodemon
+	npm install express cors dotenv square nodemon mysql2 swagger-jsdoc swagger-ui-express
+	or
+	npm i
 
 c. Update the package.json from the server:
 

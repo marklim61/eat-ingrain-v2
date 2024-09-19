@@ -1,87 +1,130 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, lazy, Suspense, startTransition } from "react";
 import pure_project from "../assets/Ingrain_Background.jpg";
 import night_parade from "../assets/instagram_gallery/firstpopup_v2.jpg";
 import goalxbrewing from "../assets/instagram_gallery/secondpopup_v3.jpg";
 import "./Style.css";
 import event_bg from "../assets/instagram_gallery/event_BG.jpg";
-import EventTimer from "../components/EventTimer";
-import BackgroundBanner from "../components/BackgroundBanner";
-import Navbar from "../components/Navbar";
-import EventTimeline from "../components/EventTimeline";
+
+// Lazy load the components
+const EventTimer = lazy(() => import("../components/EventTimer"));
+const BackgroundBanner = lazy(() => import("../components/BackgroundBanner"));
+const Navbar = lazy(() => import("../components/Navbar"));
+const EventTimeline = lazy(() => import("../components/EventTimeline"));
 
 const Events = () => {
-  const eventDate = useMemo(() => new Date("2024-08-22T00:00:00"), []);
-  const event1Desc = `
-    We are back for da summer and officially popping up at
-    @goalxbrewing on Sunday, June 23 from 2pm - sellout! Come by
-    for some solid beers and kick it with us on their outside
-    patio. Thank you all for your patience and continued support
-  `
-  const event2Desc = `
-    Celebrated Asian American and Pacific Islander Heritage Month.
-    INGRAIN at @puremiramar NEW MENU ITEMS & KICK OFF @purebrewing
-    STRAWBERRY FEST RICE, BEER, HERITAGE
-  `
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [pastEvents, setPastEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
-  const event3Desc = `First ever plates at @nightparadebrewing`
+  const fetchWithRetry = async (url, retries = 3) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Network response was not ok');
+        return await res.json();
+      } catch (err) {
+        console.error(`Attempt ${i + 1} failed: ${err.message}`);
+        if (i === retries - 1) throw err; // Throw error if no retries left
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retrying
+      }
+    }
+  };
 
-  return (
-    <>
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setIsLoading(true); // Start loading
+        startTransition(async () => {
+          const res = await fetchWithRetry("http://localhost:3001/get-upcoming-events");
+          setUpcomingEvents(res);
+          setIsLoading(false); // Stop loading
+        });
+      } catch (err) {
+        console.error(err);
+        setIsLoading(false); // Stop loading on error
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  const upcomingEvent = () => {
+    const eventDate = new Date(upcomingEvents[0]?.date);
+    return (
+      <div id="container1" className="relative">
+        <Navbar/>
+        <Suspense fallback={<div>Loading...</div>}>
+          <BackgroundBanner bgImage={upcomingEvents[0].image} />
+          <div className="relative z-1 flex flex-col justify-center items-center">
+            <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
+              JOIN US FOR OUR NEXT POPUP <br /> AT {upcomingEvents[0].nameOfPlace}
+            </h1>
+            <h4 className="text-white aesthet-nova-h2 mb-6 text-center text-xl">
+              {upcomingEvents[0].address}
+            </h4>
+            <p className="text-xl md:text-2xl mb-6 text-white aesthet-nova text-center">
+              {eventDate.toDateString()} <br /> {upcomingEvents[0].time}
+            </p>
+            <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white aesthet-nova text-center">
+              Countdown to the event:
+            </h2>
+            <EventTimer eventDate={eventDate} setColor="bg-ingrain-color-orange"/>
+          </div>
+        </Suspense>
+      </div>
+    );
+  };
+
+  const noUpcomingEvents = () => (
     <div id="container1" className="relative">
       <Navbar/>
       <BackgroundBanner bgImage={event_bg} />
-      <div className="relative z-1 flex flex-col justify-center items-center">
+      <div className="relative z-1 flex flex-col justify-center items-center mb-24 p-12">
         <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
-          JOIN US FOR OUR NEXT POPUP <br /> AT GOAL. BREWING
+          NO UPCOMING EVENTS
         </h1>
-        <h4 className="text-white aesthet-nova-h2 mb-6 text-center text-xl">
-          3052 El Cajon Blvd Suite 101, San Diego, CA 92104
-        </h4>
-        <p className="text-xl md:text-2xl mb-6 text-white aesthet-nova text-center">
-          {eventDate.toDateString()} <br /> 2PM - SELLOUT
-        </p>
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white aesthet-nova text-center">
-          Countdown to the event:
-        </h2>
-        <EventTimer eventDate={eventDate} setColor="bg-ingrain-color-orange"/>
       </div>
     </div>
+  );
 
-    <div id="container2" className="relative flex items-center justify-center p-4 pl-3 md:p-12 mb-24 mt-24 rounded-xl max-w-screen md:max-w-7xl mx-auto md:drop-shadow-2xl drop-shadow-xl bg-ingrain-board-color">
-      <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
-        <li> 
-          <EventTimeline 
-          eventDate={'June 23 2024'} 
-          eventTitle={'POPUP AT GOAL. BREWING'} 
-          eventDescription={event1Desc}
-          eventImage={goalxbrewing} 
-          imagePosition={'timeline-end'}
-          textPosition={'timeline-start'}
-          textAlign={'text-end'}/>
-        </li>
-        <li> 
-          <EventTimeline 
-          eventDate={'May 22 2024'} 
-          eventTitle={'Pure Project Miramar'} 
-          eventDescription={event2Desc}
-          eventImage={pure_project} 
-          imagePosition={'timeline-start'}
-          textPosition={'timeline-end'}
-          textAlign={'text-start'}/>
-        </li>
-        <li> 
-          <EventTimeline 
-          eventDate={'November 18 2023'} 
-          eventTitle={'Night Parade Brewing Co.'} 
-          eventDescription={event3Desc}
-          eventImage={night_parade} 
-          imagePosition={'timeline-end'}
-          textPosition={'timeline-start'}
-          textAlign={'text-end'}/>
-        </li>
-      </ul>
-    </div>
+  useEffect(() => {
+    const fetchPastEvents = async () => {
+      try {
+        const res = await fetchWithRetry("http://localhost:3001/get-past-events");
+        setPastEvents(res);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPastEvents();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading events...</div>; // Show loading spinner if necessary
+  }
+
+  return (
+    <>
+      {upcomingEvents.length > 0 ? upcomingEvent() : noUpcomingEvents()}
+
+      <div id="container2" className="relative flex items-center justify-center p-4 pl-3 md:p-12 mb-24 mt-24 rounded-xl max-w-screen md:max-w-7xl mx-auto md:drop-shadow-2xl drop-shadow-xl bg-ingrain-board-color">
+        <Suspense fallback={<div>Loading timeline...</div>}>
+          <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
+            {pastEvents.map((event, index) => (
+              <li key={index} id={event.id}> 
+                <EventTimeline 
+                  eventDate={new Date(event.date).toDateString()} 
+                  eventTitle={event.title} 
+                  eventDescription={event.description}
+                  eventImage={event.image} 
+                  index={index}
+                />
+              </li>
+            ))}
+          </ul>
+        </Suspense>
+      </div>
     </>
-  )}
+  );
+};
 
 export default Events;
