@@ -35,10 +35,11 @@ const Table = ({ columns, data }) => {
                                 <td
                                     {...cell.getCellProps()}
                                     key={cell.column.id}
-                                    className="overflow-hidden text-ellipsis white-space-nowrap max-w-[200px] p-[10px]"
+                                    className="overflow-hidden text-ellipsis max-w-[200px] p-[10px]"
                                     style={{ border: "1px dashed gray" }}
                                 >
-                                    {cell.render("Cell")}
+                                    {/* {cell.render("Cell")} */}
+                                    {cell.value.length > 5 ? `${cell.value.substring(0, 20)}...` : cell.value}
                                 </td>
                             ))}
                             <td>
@@ -53,3 +54,4 @@ const Table = ({ columns, data }) => {
 }
 
 export default Table;
+

@@ -27,6 +27,9 @@ const EventsMobileData = [
 const EventsMobileColumns = [
     { Header: "Id", accessor: "id" },
     { Header: "Title", accessor: "title" },
+    { Header: "Address", accessor: "address" },
+    { Header: "Date", accessor: "date" },
+    { Header: "Time", accessor: "time" },
     { Header: "Description", accessor: "description" },
 ];
 
