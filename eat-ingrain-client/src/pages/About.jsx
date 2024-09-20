@@ -6,26 +6,27 @@ import BackgroundBanner from "../components/BackgroundBanner";
 import Navbar from "../components/Navbar";
 import CoFounderComponent from "../components/CoFounderComp";
 import PhotoGallery from "../components/PhotoGallery";
+import Footer from "../components/Footer";
 
 const About = () => {
-
-  const title = "The art of crafting cool food"
-  const slogan = "Ingrain. A Brand. A Team. With Passion. To make cool food. For Da Culture."
+  const title = "The art of crafting cool food";
+  const slogan =
+    "Ingrain. A Brand. A Team. With Passion. To make cool food. For Da Culture.";
   const about = `
     At Ingrain, our central focus is to express passion through the
     art of crafting cool food that seamlessly fuses the rich tapestry
     of Asian Pacific Islander culture with a modern, innovative
     approach. We are dedicated to redefining culinary boundaries,
     celebrating heritage, and creating memorable experiences.
-  `  
+  `;
 
   return (
     <div>
       {/* Brief Info */}
-      <div id="container1" className="relative">
-        <Navbar/>
+      <div id="container1" className="relative h-screen flex flex-col">
+        <Navbar />
         <BackgroundBanner bgImage={IG_background} />
-        <div className="relative z-1 text-left flex flex-col justify-center h-full w-full p-16">
+        <div className="relative z-1 text-left flex flex-col justify-center h-full w-full pl-24 pt-48">
           <article className="prose lg:prose-2xl aesthet_nova text-white text-left">
             <h1 className="aesthet-nova-h1 text-white">{title}</h1>
             <p className="aesthet-nova-h2 pt-6 text-3xl">{slogan}</p>
@@ -50,6 +51,7 @@ const About = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
