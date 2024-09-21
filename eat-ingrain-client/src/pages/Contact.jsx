@@ -4,6 +4,7 @@ import grainy from "../assets/transparentGrainy2.png";
 import { NavLink } from "react-router-dom";
 import "./Style.css";
 import "./speechbubble.css";
+import Navbar from "../components/Navbar";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -65,6 +66,7 @@ const Contact = () => {
 
   return (
     <div>
+      <Navbar />
       <div className="contact-container flex items-center justify-center bg-white h-screen">
         <form style={{ width: "20%" }}>
           <div className="forum-section font-bold text-4xl flex items-center justify-center mb-4 center aesthet-nova-h3 text-ingrain-color-orange">

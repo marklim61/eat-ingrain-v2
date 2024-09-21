@@ -16,12 +16,12 @@ const Events = () => {
     for (let i = 0; i < retries; i++) {
       try {
         const res = await fetch(url);
-        if (!res.ok) throw new Error('Network response was not ok');
+        if (!res.ok) throw new Error("Network response was not ok");
         return await res.json();
       } catch (err) {
         console.error(`Attempt ${i + 1} failed: ${err.message}`);
         if (i === retries - 1) throw err; // Throw error if no retries left
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retrying
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds before retrying
       }
     }
   };
@@ -89,6 +89,24 @@ const Events = () => {
     </>
   );
 
+  useEffect(() => {
+    const fetchPastEvents = async () => {
+      try {
+        const res = await fetchWithRetry(
+          "http://localhost:3001/get-past-events"
+        );
+        setPastEvents(res);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPastEvents();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading events...</div>; // Show loading spinner if necessary
+  }
+
   return (
     <>
       <div id="container1" className="relative">
@@ -99,12 +117,12 @@ const Events = () => {
         {isLoadingPastEvent ? <span className="loading loading-spinner text-primary"></span> :
           <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
             {pastEvents.map((event, index) => (
-              <li key={index} id={event.id}> 
-                <EventTimeline 
-                  eventDate={new Date(event.date).toDateString()} 
-                  eventTitle={event.title} 
+              <li key={index} id={event.id}>
+                <EventTimeline
+                  eventDate={new Date(event.date).toDateString()}
+                  eventTitle={event.title}
                   eventDescription={event.description}
-                  eventImage={event.image} 
+                  eventImage={event.image}
                   index={index}
                 />
               </li>
@@ -112,6 +130,7 @@ const Events = () => {
           </ul>
        }
       </div>
+      <Footer />
     </>
   );
 };

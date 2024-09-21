@@ -1,9 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const Contact_v2 = () => {
-  const formRef = useRef(null);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,14 +40,12 @@ const Contact_v2 = () => {
         //TODO: Show error message
       });
   };
-  const handleFocus = () => {};
-  const handleBlur = () => {};
 
   return (
     <>
     <Navbar />
-    <section id="contact" className=" flex lg:flex-row flex-col max-container items-center justify-start mb-20">
-      <div className="flex-1 flex flex-col items-center justify-start">
+    <section id="contact" className=" flex lg:flex-row flex-col items-center justify-center min-h-screen pt-56 mb-16">
+      <div className="flex-1 flex flex-col items-center justify-center">
         <div className="w-full max-w-xl p-6 bg-ingrain-board-color rounded-lg shadow-lg pt-10 pb-10">
           <h1 className="text-4xl mb-8 text-center text-bold aesthet-nova">
             Get in Touch
@@ -66,8 +64,6 @@ const Contact_v2 = () => {
                 required
                 value={form.name}
                 onChange={handleChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
               />
             </label>
             <label className="font-semibold aesthet-nova-h1 text-md">
@@ -80,8 +76,6 @@ const Contact_v2 = () => {
                 required
                 value={form.email}
                 onChange={handleChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
               />
             </label>
             <label className="font-semibold aesthet-nova-h1 text-md">
@@ -94,16 +88,12 @@ const Contact_v2 = () => {
                 required
                 value={form.message}
                 onChange={handleChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
               />
             </label>
             <button
               type="submit"
               className="btn"
               disabled={isLoading}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
             >
               {isLoading ? "Sending..." : "Send Message"}
             </button>
@@ -111,6 +101,7 @@ const Contact_v2 = () => {
         </div>
       </div>
     </section>
+    <Footer />
     </>
   );
 };
