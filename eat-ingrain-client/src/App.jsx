@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Outlet } from "react-router-dom";
 import {
   Home,
   MobileHome,
@@ -29,27 +29,34 @@ const App = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return (
+  const CartLayout = () => (
     <CartProvider>
-      <div className="min-h-screen bg-white">
-        <Router>
-          <div className="flex flex-col min-h-screen">
-            <Routes>
-              <Route path="/" element={isMobile ? <MobileHome /> : <Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/contact" element={<Contact />} />
+      <Outlet />
+    </CartProvider>
+  );
+
+  return (
+    <div className="min-h-screen bg-white">
+      <Router>
+          <Routes>
+            <Route path="/" element={isMobile ? <MobileHome /> : <Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+
+            {/* Routes that need CartProvider */}
+            <Route element={<CartLayout />}>
               <Route path="/shop" element={<Shop />} />
-              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/shopping-cart" element={<ShoppingCart />} />
               <Route path="/checkout" element={<PaymentComponent />} />
-              <Route path="/success" element={<SuccessPage />} />
-            </Routes>
-          </div>
-        </Router>
-      </div>
-    </CartProvider>
+            </Route>
+
+            <Route path="/success" element={<SuccessPage />} />
+          </Routes>
+      </Router>
+    </div>
   );
 };
 
