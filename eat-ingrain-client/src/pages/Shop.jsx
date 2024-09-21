@@ -1,17 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import merch_bg from "../assets/shop_bg.jpg";
 import { NavLink } from "react-router-dom";
 import CartButton from "../components/CartButton";
 import CartModal from "./CartModal";
 import axios from "axios";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import CartContext from "../components/CartContext";
 
 const Shop = () => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { isCartOpen, handleCartOpen, handleCartClose, cartItems } =
+    useContext(CartContext);
   const [products, setProducts] = useState([]);
 
-  const handleCartOpen = () => setIsCartOpen(true);
-  const handleCartClose = () => setIsCartOpen(false);
+  const updateQuantity = (index, quantity) => {
+    const updatedCartItems = [...cartItems];
+    updatedCartItems[index].quantity = quantity;
+  };
+
+  const removeItem = (index) => {
+    const updatedCartItems = [...cartItems];
+    updatedCartItems.splice(index, 1);
+  };
 
   // useEffect(() => {
   //   // Fetch product data from the server using axios
@@ -44,17 +54,16 @@ const Shop = () => {
         setProducts([]); // Set products to an empty array in case of error
       }
     };
-  
+
     fetchProducts();
   }, []);
-  
 
   return (
     <div className="flex flex-col min-h-screen">
+      <Navbar />
       <div className="flex-grow">
         <div className="h-screen flex items-center justify-center">
           <div className="relative flex flex-col justify-center items-center bg-neutral-950 h-full w-full p-16 mt-48 mb-48">
-            <Navbar />
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
@@ -79,7 +88,6 @@ const Shop = () => {
                 to={`/product/${product.id}`}
                 key={product.id}
                 className="p-4 m-6 rounded-lg shadow-lg bg-ingrain-board-color"
-                // activeClassName="active"
               >
                 <img
                   src={product.image}
@@ -97,14 +105,20 @@ const Shop = () => {
           })}
         </div>
       </div>
-      <CartButton onClick={handleCartOpen} /> {/* Add Cart Button */}
+      <CartButton
+        onClick={() => {
+          console.log("Cart button clicked from the shop component");
+          handleCartOpen();
+        }}
+      />
       <CartModal
         isOpen={isCartOpen}
         onClose={handleCartClose}
-        cartItems={[]} // Pass the actual cartItems from your app state
-        updateQuantity={() => {}} // Implement the updateQuantity function
-        removeItem={() => {}} // Implement the removeItem function
+        cartItems={cartItems}
+        updateQuantity={updateQuantity}
+        removeItem={removeItem}
       />
+      <Footer />
     </div>
   );
 };

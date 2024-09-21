@@ -1,61 +1,75 @@
-import React from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
+import CartContext from "../components/CartContext";
 
-const CartModal = ({
-  isOpen,
-  onClose,
-  cartItems,
-  updateQuantity,
-  removeItem,
-}) => {
+const CartModal = () => {
+  const context = useContext(CartContext);
+
+  if (!context) {
+    throw new Error("CartModal must be used within a CartProvider");
+  }
+
+  const {
+    isCartOpen,
+    handleCartClose,
+    cartItems,
+    updateQuantity,
+    removeItem,
+    calculateSubtotal,
+  } = context;
+
+  console.log("CartModal isCartOpen:", isCartOpen);
+
+  const modalRef = useRef(null);
+
   const handleQuantityChange = (index, quantity) => {
     // Ensure quantity is at least 1
     const newQuantity = Math.max(1, quantity);
     updateQuantity(index, newQuantity);
   };
 
-  const formatPrice = (priceInCents) => {
-    // Convert cents to dollars and format as string
-    return (priceInCents / 100).toFixed(2);
+  const handleRemoveItem = (index) => {
+    removeItem(index);
   };
 
-  const calculateSubtotal = () => {
-    console.log(cartItems); // Log cartItems to check its structure
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        handleCartClose();
+      }
+    };
 
-    return cartItems
-      .reduce((acc, item) => {
-        if (typeof item.priceInCents === "undefined") {
-          console.warn("Item priceInCents is undefined:", item); // Log items with missing price
-          return acc;
-        }
+    if (isCartOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
 
-        const itemPrice = parseFloat(formatPrice(item.priceInCents));
-        return acc + itemPrice * item.quantity;
-      }, 0)
-      .toFixed(2);
-  };
-
-  const handleCheckout = () => {};
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isCartOpen, handleCartClose]);
 
   return (
     <>
-      {isOpen && (
+      {isCartOpen && (
         <div
           className="fixed inset-0 bg-neutral-900 bg-opacity-20 z-40"
-          onClick={onClose}
+          onClick={handleCartClose}
         ></div>
       )}
       <div
-        className={`fixed top-0 right-0 h-full w-1/2 sm:w-1/5 bg-white shadow-lg transform ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform duration-500 ease-in-out z-50`}
+        ref={modalRef}
+        className={`fixed top-0 right-0 h-full w-1/2 sm:w-1/5 bg-white shadow-lg transform transition-transform duration-500 ease-in-out z-40 ${
+          isCartOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         <div className="pt-8 pb-8 p-3 flex justify-center items-center bg-ingrain-color-orange">
           <div className="absolute left-3">
             <button
-              onClick={onClose}
+              onClick={handleCartClose}
               className="text-gray-500 hover:text-gray-800 text-2xl font-extrabold"
             >
               <FontAwesomeIcon icon={faChevronRight} />
@@ -79,7 +93,7 @@ const CartModal = ({
                   className="mb-4 flex items-center border-b last:border-b-0 pb-4 relative"
                 >
                   <button
-                    onClick={() => removeItem(index)}
+                    onClick={() => handleRemoveItem(index)}
                     className="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-800"
                   >
                     <FontAwesomeIcon icon={faTimes} />
@@ -141,7 +155,7 @@ const CartModal = ({
             <NavLink
               to="/shopping-cart"
               className="w-full py-2 bg-neutral-950 text-ingrain-color-orange text-xl rounded text-center hover:bg-ingrain-color-orange hover:text-neutral-950"
-              onClick={onClose}
+              onClick={handleCartClose}
             >
               Shopping Cart
             </NavLink>
