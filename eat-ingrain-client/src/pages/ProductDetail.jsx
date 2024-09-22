@@ -80,11 +80,14 @@ const ProductDetail = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <Navbar />
-      <CartButton onClick={() => {
-        console.log("handleCartOpen triggered from product detail"); // Log when handleCartOpen is called
-        handleCartOpen();
-      }}className="absolute top-4 right-4" />
-      <div className="bg-ingrain-board-color p-8 rounded-lg drop-shadow-xl max-w-4xl w-full m-8">
+      <CartButton 
+        onClick={() => {
+          console.log("handleCartOpen triggered from product detail"); // Log when handleCartOpen is called
+          handleCartOpen();
+        }}
+        className="absolute top-4 right-4" 
+      />
+      <div className="bg-ingrain-board-color p-8 rounded-lg drop-shadow-xl max-w-4xl w-full m-8 mt-[200px]">
         <div className="flex items-center mb-4">
           <NavLink
             to="/shop"

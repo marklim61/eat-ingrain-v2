@@ -4,7 +4,7 @@ import ingrain_Logo from "../assets/transparentINGRAIN.png";
 
 const Navbar = () => {
   return (
-    <div className="absolute w-full flex justify-center p-10 pt-[50px] pb-4 z-10">
+    <div className="absolute top-0 z-10 w-full flex justify-center p-10 pt-[50px] pb-4">
       <NavLink to="/">
         <img
           src={ingrain_Logo}
