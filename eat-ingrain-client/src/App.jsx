@@ -46,7 +46,6 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/events" element={<Events />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<AdminDashboard />} />
 
             {/* Routes that need CartProvider */}
             <Route element={<CartLayout />}>
@@ -57,6 +56,11 @@ const App = () => {
             </Route>
 
             <Route path="/success" element={<SuccessPage />} />
+
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/events" element={<AdminEvents />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/inventory" element={<AdminInventory />} />
           </Routes>
       </Router>
     </div>

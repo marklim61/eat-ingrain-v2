@@ -6,7 +6,7 @@ const { Client } = require("square");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const {swaggerDocs} = require('./swagger/swaggerDocs');
-const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
+const { order, getOrders, getNewOrders, getOrdersInTransit, getOrdersDelivered, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
 const { createEvent, getEvents, getPastEvents, getUpcomingEvents, updateEvent, deleteEvent } = require("./service/events");
 
 const app = express();
@@ -38,6 +38,66 @@ app.get("/get-orders", async (req, res) => {
     res.status(500).json({ error: "Failed to get orders", details: err.message });
   }
 });
+
+/**
+ * @openapi
+ * /get-new-orders:
+ *   get:
+ *     summary: Get all new orders
+ *     responses:
+ *       200:
+ *         description: Returns an array of orders
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-new-orders", async (req, res) => {
+  try {
+    const orders = await getNewOrders();
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-orders-in-transit:
+ *   get:
+ *     summary: Get all orders in transit
+ *     responses:
+ *       200:
+ *         description: Returns an array of orders
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-orders-in-transit", async (req, res) => {
+  try {
+    const orders = await getOrdersInTransit();
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-orders-delivered:
+ *   get:
+ *     summary: Get all orders delivered
+ *     responses:
+ *       200:
+ *         description: Returns an array of orders
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-orders-delivered", async (req, res) => {
+  try {
+    const orders = await getOrdersDelivered();
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
 
 /**
  * @openapi
