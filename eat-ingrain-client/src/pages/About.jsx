@@ -20,16 +20,6 @@ const About = () => {
     celebrating heritage, and creating memorable experiences.
   `;
 
-  const bannerContent = (
-    <div className="relative z-1 text-left flex flex-col justify-center h-full w-full p-16">
-      <article className="prose lg:prose-2xl aesthet_nova text-white text-left">
-        <h1 className="aesthet-nova-h1 text-white">{title}</h1>
-        <p className="aesthet-nova-h2 pt-6 text-3xl">{slogan}</p>
-        <p className="aesthet-nova-h2 text-2xl">{about}</p>
-      </article>
-    </div>
-  )
-
   return (
     <div>
       {/* Brief Info */}
