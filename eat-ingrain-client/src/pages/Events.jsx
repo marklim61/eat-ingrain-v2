@@ -5,12 +5,14 @@ import EventTimer from "../components/EventTimer";
 import BackgroundBanner from "../components/BackgroundBanner";
 import Navbar from "../components/Navbar";
 import EventTimeline from "../components/EventTimeline";
+import Footer from "../components/Footer";
 
 const Events = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
   const [isLoadingPastEvent, setIsLoadingPastEvent] = useState(true); 
   const [isloadingUpcomingEvent, setIsLoadingUpcomingEvent] = useState(true);
+  const [hasErrorPastEvent, setHasErrorPastEvent] = useState(false);
 
   const fetchWithRetry = async (url, retries = 3) => {
     for (let i = 0; i < retries; i++) {
@@ -29,13 +31,15 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
+        setIsLoadingUpcomingEvent(true);
         const res = await fetchWithRetry("http://localhost:3001/get-upcoming-events");
         setUpcomingEvents(res);
-        setIsLoadingUpcomingEvent(false);
       } catch (err) {
         console.error(err);
-        setIsLoadingUpcomingEvent(true);
-      } 
+        setUpcomingEvents([]);
+      } finally {
+        setIsLoadingUpcomingEvent(false);
+      }
     };
     fetchEvents();
   }, []);
@@ -43,23 +47,29 @@ const Events = () => {
   useEffect(() => {
     const fetchPastEvents = async () => {
       try {
+        setIsLoadingPastEvent(true);
+        setHasErrorPastEvent(false);
         const res = await fetchWithRetry("http://localhost:3001/get-past-events");
         setPastEvents(res);
-        setIsLoadingPastEvent(false); // Stop loading
       } catch (err) {
         console.error(err);
-        setIsLoadingPastEvent(true); // keep loading while there's error
+        setPastEvents([]);
+        setIsLoadingPastEvent(false);
+        setHasErrorPastEvent(true);
+      } finally {
+        setIsLoadingPastEvent(false);
       }
     };
     fetchPastEvents();
   }, []);
 
-  const upcomingEvent = () => {
+  const renderUpcomingEventUI = () => {
     const eventDate = new Date(upcomingEvents[0]?.date);
     return (
       <>
         <BackgroundBanner bgImage={upcomingEvents[0].image} />
-        <div className="relative z-1 flex flex-col justify-center items-center">
+        {/* <div className="relative z-1 flex flex-col justify-center items-center"> */}
+        <div className="relative z-1 text-left flex flex-col min-h-screen h-full w-4/5 mx-auto pb-12 pt-[200px]">
           <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
             JOIN US FOR OUR NEXT POPUP <br /> AT {upcomingEvents[0].nameOfPlace}
           </h1>
@@ -78,10 +88,11 @@ const Events = () => {
     );
   };
 
-  const noUpcomingEvents = () => (
+  const renderNoUpcomingEventUI = () => (
     <>
       <BackgroundBanner bgImage={event_bg} />
-      <div className="relative z-1 flex flex-col justify-center items-center mb-24 p-12">
+      {/* <div className="relative z-1 flex flex-col justify-center items-center mb-24 p-12"> */}
+      <div className="relative z-1 text-left flex flex-col min-h-screen h-full w-4/5 mx-auto p-12 pt-[200px]">
         <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
           NO UPCOMING EVENTS
         </h1>
@@ -89,32 +100,28 @@ const Events = () => {
     </>
   );
 
-  useEffect(() => {
-    const fetchPastEvents = async () => {
-      try {
-        const res = await fetchWithRetry(
-          "http://localhost:3001/get-past-events"
-        );
-        setPastEvents(res);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchPastEvents();
-  }, []);
+  const renderLoadingSpinner = () => {
+    return (
+      <span className="loading loading-spinner text-primary" />
+    );
+  };
 
-  if (isLoading) {
-    return <div>Loading events...</div>; // Show loading spinner if necessary
-  }
+  const renderErrorPastEventsUI = () => {
+    return (
+      <div className="flex items-center justify-center">
+        <p className="text-red-500">Error loading past events.</p>
+      </div>
+    )
+  };
 
   return (
     <>
       <div id="container1" className="relative">
         <Navbar/>
-        {isloadingUpcomingEvent || upcomingEvents.length === 0 ? noUpcomingEvents() : upcomingEvent()}
+        {isloadingUpcomingEvent || upcomingEvents.length === 0 ? renderNoUpcomingEventUI() : renderUpcomingEventUI()}
       </div>
       <div id="container2" className="relative flex items-center justify-center p-4 pl-3 md:p-12 mb-24 mt-24 rounded-xl max-w-screen md:max-w-7xl mx-auto md:drop-shadow-2xl drop-shadow-xl bg-ingrain-board-color">
-        {isLoadingPastEvent ? <span className="loading loading-spinner text-primary"></span> :
+        {isLoadingPastEvent ? renderLoadingSpinner() : hasErrorPastEvent ? renderErrorPastEventsUI() :
           <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
             {pastEvents.map((event, index) => (
               <li key={index} id={event.id}>

@@ -44,7 +44,7 @@ const Contact_v2 = () => {
   return (
     <>
     <Navbar />
-    <section id="contact" className=" flex lg:flex-row flex-col items-center justify-center min-h-screen pt-56 mb-16">
+    <section id="contact" className=" flex lg:flex-row flex-col items-center justify-center min-h-screen pt-[200px] mb-16">
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="w-full max-w-xl p-6 bg-ingrain-board-color rounded-lg shadow-lg pt-10 pb-10">
           <h1 className="text-4xl mb-8 text-center text-bold aesthet-nova">

@@ -20,13 +20,23 @@ const About = () => {
     celebrating heritage, and creating memorable experiences.
   `;
 
+  const bannerContent = (
+    <div className="relative z-1 text-left flex flex-col justify-center h-full w-full p-16">
+      <article className="prose lg:prose-2xl aesthet_nova text-white text-left">
+        <h1 className="aesthet-nova-h1 text-white">{title}</h1>
+        <p className="aesthet-nova-h2 pt-6 text-3xl">{slogan}</p>
+        <p className="aesthet-nova-h2 text-2xl">{about}</p>
+      </article>
+    </div>
+  )
+
   return (
     <div>
       {/* Brief Info */}
-      <div id="container1" className="relative h-screen flex flex-col">
+      <div id="container1" className="relative">
         <Navbar />
         <BackgroundBanner bgImage={IG_background} />
-        <div className="relative z-1 text-left flex flex-col justify-center h-full w-full pl-24 pt-48">
+        <div className="relative z-1 text-left flex flex-col min-h-screen h-full w-4/5 mx-auto p-12 pt-[200px]">
           <article className="prose lg:prose-2xl aesthet_nova text-white text-left">
             <h1 className="aesthet-nova-h1 text-white">{title}</h1>
             <p className="aesthet-nova-h2 pt-6 text-3xl">{slogan}</p>
