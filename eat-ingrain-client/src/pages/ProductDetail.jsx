@@ -1,13 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, NavLink } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 import axios from "axios";
+import CartContext from "../components/CartContext";
+import CartModal from "./CartModal";
+import CartButton from "../components/CartButton";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-const ProductDetail = ({ addToCart }) => {
+const ProductDetail = () => {
   const { id } = useParams(); // Get the product ID from the URL
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("");
+
+  const { addToCart, isCartOpen, handleCartOpen, handleCartClose } =
+    useContext(CartContext);
 
   useEffect(() => {
     // Fetch the product details based on the ID
@@ -70,8 +78,13 @@ const ProductDetail = ({ addToCart }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="bg-ingrain-board-color p-8 rounded-lg drop-shadow-xl max-w-4xl w-full m-48">
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <Navbar />
+      <CartButton onClick={() => {
+        console.log("handleCartOpen triggered from product detail"); // Log when handleCartOpen is called
+        handleCartOpen();
+      }}className="absolute top-4 right-4" />
+      <div className="bg-ingrain-board-color p-8 rounded-lg drop-shadow-xl max-w-4xl w-full m-8">
         <div className="flex items-center mb-4">
           <NavLink
             to="/shop"
@@ -194,6 +207,8 @@ const ProductDetail = ({ addToCart }) => {
           </div>
         </div>
       </div>
+      <CartModal isOpen={isCartOpen} onClose={handleCartClose} />
+      <Footer />
     </div>
   );
 };
