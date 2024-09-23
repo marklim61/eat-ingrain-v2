@@ -431,7 +431,7 @@ app.post('/delete-event', async (req, res) => {
  *       500:
  *         description: Failed to create item
  */
-app.post('create-item', async (req, res) => {
+app.post('/create-item', async (req, res) => {
   const { productName, description, price, size, quantity } = req.body;
   try {
     const result = await createItem(productName, description, price, size, quantity);
@@ -461,7 +461,7 @@ app.post('create-item', async (req, res) => {
  *       500:
  *         description: Failed to delete item
  */
-app.post('delete-item', async (req, res) => {
+app.post('/delete-item', async (req, res) => {
   const { id } = req.body;
   try {
     const result = await deleteItem(id);
@@ -524,6 +524,50 @@ app.patch('/update-event', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /update-item:
+ *   patch:
+ *     summary: Update an item
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               productName:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               size:
+ *                 type: string
+ *               quantity:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Item updated successfully
+ *       500:
+ *         description: Failed to update item
+ */ 
+app.patch('/update-item', async (req, res) => {
+  const { id, ...updateFields } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "Item ID is required" });
+  }
+
+  try {
+    const result = await updateItem(id, updateFields);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update Item", details: err.message });
+  }
+});
 //--------------------end of update endpoints----------------------------------------
 
 // Add this line to handle BigInt serialization

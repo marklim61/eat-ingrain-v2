@@ -1,6 +1,7 @@
 const connectionPool = require('../database/connection');
 
 const createItem = async (productName, description, price, size, quantity) => {
+    console.log(2);
     const database = await connectionPool.getConnection();
     const query = `
         INSERT INTO inventory 
