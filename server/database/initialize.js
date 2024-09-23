@@ -33,6 +33,17 @@ CREATE TABLE IF NOT EXISTS events (
   dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP
 )`;
 
+const createInventoryTableQuery = `
+CREATE TABLE IF NOT EXISTS inventory (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  productName VARCHAR(255) NOT NULL,
+  description VARCHAR(1000) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  size VARCHAR(10) NOT NULL,
+  quantity INT NOT NULL,  
+  dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP
+)`;
+
 async function initializeDatabase() {
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
@@ -53,6 +64,9 @@ async function initializeDatabase() {
 
     await connection.query(createEventsTableQuery);
     console.log("Events table checked/created.");
+
+    await connection.query(createInventoryTableQuery);
+    console.log("Inventory table checked/created.");
   } catch (err) {
     console.error("Database initialization error:", err.message);
   } finally {
