@@ -8,7 +8,7 @@ const cors = require("cors");
 const {swaggerDocs} = require('./swagger/swaggerDocs');
 const { order, getOrders, getNewOrders, getOrdersInTransit, getOrdersDelivered, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
 const { createEvent, getEvents, getPastEvents, getUpcomingEvents, updateEvent, deleteEvent } = require("./service/events");
-
+const { createItem, getInventory, updateItem, deleteItem } = require("./service/inventory");
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -185,6 +185,26 @@ app.get("/get-upcoming-events", async (req, res) => {
     res.status(500).json({ error: "Failed to get events", details: err.message });
   }
 })
+
+/**
+ * @openapi
+ * /get-inventory:
+ *   get:
+ *     summary: Get all items in the inventory
+ *     responses:
+ *       200:
+ *         description: Returns an array of inventory
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-inventory", async (req, res) => {
+  try {
+    const inventory = await getInventory();
+    res.status(200).json(inventory);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get inventory", details: err.message });
+  }
+})
 // --------------------end of get endpoints----------------------------------------
 
 // --------------------Post endpoints----------------------------------------
@@ -353,6 +373,26 @@ app.post('/create-event', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /delete-event:
+ *   post:
+ *     summary: Delete an event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Event deleted successfully
+ *       500:
+ *         description: Failed to delete event
+ */
 app.post('/delete-event', async (req, res) => {
   const { id } = req.body;
   try {
@@ -360,6 +400,74 @@ app.post('/delete-event', async (req, res) => {
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: "Failed to delete event", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /create-item:
+ *   post:
+ *     summary: Create an item in the inventory
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object 
+ *             properties:
+ *               productName:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               size:
+ *                 type: string
+ *               quantity:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Item created successfully
+ *       500:
+ *         description: Failed to create item
+ */
+app.post('create-item', async (req, res) => {
+  const { productName, description, price, size, quantity } = req.body;
+  try {
+    const result = await createItem(productName, description, price, size, quantity);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create item", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /delete-item:
+ *   post:
+ *     summary: Delete an item from the inventory
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Item deleted successfully
+ *       500:
+ *         description: Failed to delete item
+ */
+app.post('delete-item', async (req, res) => {
+  const { id } = req.body;
+  try {
+    const result = await deleteItem(id);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete item", details: err.message });
   }
 })
 //--------------------end of post endpoints----------------------------------------
