@@ -41,7 +41,7 @@ const EventTimer = ({eventDate, setColor}) => {
 
     return (
         <>
-        <div className="grid grid-flow-col gap-2 md:gap-5 text-center auto-cols-max mb-10">
+        <div className="grid grid-flow-col gap-2 md:gap-5 text-center auto-cols-max mx-auto mb-10">
             <div className={`flex flex-col p-2 ${setColor} rounded-box text-neutral-content`}>
                 <span className="countdown font-mono text-4xl md:text-5xl">
                     {timeRemaining.days < 10

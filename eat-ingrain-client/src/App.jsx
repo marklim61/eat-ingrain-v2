@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Outlet } from "react-router-dom";
 import {
   Home,
-  MobileHome,
   About,
   Events,
   Contact,
@@ -19,18 +18,6 @@ import {
 import { CartProvider } from "./components/CartContext";
 
 const App = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 1200);
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Initial check
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const CartLayout = () => (
     <CartProvider>
@@ -42,7 +29,7 @@ const App = () => {
     <div className="min-h-screen bg-white">
       <Router>
           <Routes>
-            <Route path="/" element={isMobile ? <MobileHome /> : <Home />} />
+            <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/events" element={<Events />} />
             <Route path="/contact" element={<Contact />} />
