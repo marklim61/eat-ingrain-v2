@@ -22,7 +22,7 @@ const AdminInventory = () => {
     }, []);
     
     return (
-        <>
+        <div className="absolute top-0 bg-white">
             <AdminNavbar />
             <div className="mx-auto inline-block mb-10">
                 {isMobile ? 
@@ -33,7 +33,7 @@ const AdminInventory = () => {
                     <Button name="Delete" style={buttonStyle}/> 
                 </div>
             </div> 
-        </>
+        </div>
     )
 }
 export default AdminInventory;

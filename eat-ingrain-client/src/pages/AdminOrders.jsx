@@ -76,6 +76,21 @@ const AdminOrders = () => {
         try {
             const res = await fetch(url);
             const data = await res.json();
+
+            if (!Array.isArray(data) || data.length === 0) {
+                setOrders([]);
+                setHasError(true);
+                if (activeTab === "All") {
+                    setError(`No orders found`);
+                } else {
+                    setError(`No ${activeTab} orders found`);
+                }
+                return;
+            } else {
+                setHasError(false);
+                setError(null);
+            }
+
             setOrders(data);
         } catch (err) {
             console.error(err);
@@ -95,15 +110,26 @@ const AdminOrders = () => {
 
 
     return (
-        <>
+        <div className="absolute top-0 bg-white">
             <AdminNavbar />
             <h1 className="text-3xl font-bold mx-auto w-4/5 pl-10 pr-10 mb-5">Orders</h1>
-            <div className="mx-auto w-4/5 mb-10">
-                <div id="tabs-container" className="flex flex-row pl-5">
+            <div className="mx-auto w-4/5 mb-10 flex flex-wrap justify-between">
+                <div id="tabs-container" className="flex flex-wrap pl-5 pr-5">
                     <Button name="All" style={activeTab === "All" ? activeTabStyle : tabsStyle} onClick={() => tab("All")} />
                     <Button name="New" style={activeTab === "New" ? activeTabStyle : tabsStyle} onClick={() => tab("New")} />
                     <Button name="In Transit" style={activeTab === "In Transit" ? activeTabStyle : tabsStyle} onClick={() => tab("In Transit")} />
                     <Button name="Delivered" style={activeTab === "Delivered" ? activeTabStyle : tabsStyle} onClick={() => tab("Delivered")} />
+                </div>
+                <div id="filter-container" className="flex flex-wrap pl-5 pr-5">
+                    <span className="pr-2">Filter By: </span>
+                    <select name="filter" className="border border-[#83AF9B] text-center">
+                        <option value="Name">Name</option>
+                        <option value="Phone">Phone</option>
+                        <option value="Status">Status</option>
+                        <option value="Date">Date</option>
+                        <option value="Order Number">Order Number</option>
+                    </select>
+                    <input type="text" className="border border-[#83AF9B] pl-2 pr-2"/>
                 </div>
                 {isLoading ? <LoadingSpinner />: hasError ? <ErrorBox error={error} /> : isMobile ?
                     <Table columns={mobileColumns} data={orders} /> : <Table columns={columns} data={orders}/> 
@@ -113,7 +139,7 @@ const AdminOrders = () => {
                     <Button name="Delete" style={buttonStyle}/> 
                 </div>
             </div> 
-        </>
+        </div>
     )
 }
 export default AdminOrders;

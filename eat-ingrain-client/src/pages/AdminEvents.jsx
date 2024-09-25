@@ -11,6 +11,7 @@ const AdminEvents = () => {
     const buttonStyle = "relative z-0 block w-[100px] border border-[#83AF9B] rounded-md shadow-sm shadow-[#83AF9B] bg-[#ECE5CE]"
     
     const [isMobile, setIsMobile] = useState(false);
+    const [isTablet, setIsTablet] = useState(false);
     const [activeTab, setActiveTab] = useState("All");
     const [events, setEvents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -18,15 +19,21 @@ const AdminEvents = () => {
     const [error, setError] = useState(null);
 
     const columns = [
+        { Header: "Id", accessor: "id" },
         { Header: "Title", accessor: "title" },
         { Header: "Address", accessor: "address" },
         { Header: "Date", accessor: "date" },
         { Header: "Time", accessor: "time" },
+        { Header: "Description", accessor: "description" },
         { Header: "Date Created", accessor: "dateCreated" },
         { Header: "Image", accessor: "image" },
     ];
     
     const mobileColumns = [
+        { Header: "Title", accessor: "title" },
+    ];
+
+    const tabletColumns = [
         { Header: "Title", accessor: "title" },
         { Header: "Address", accessor: "address" },
         { Header: "Date", accessor: "date" },
@@ -34,17 +41,30 @@ const AdminEvents = () => {
     ];
     
     const handleResize = () => {
-        if (window.innerWidth < 800) {
+        if (window.innerWidth < 600) {
             setIsMobile(true);
+            setIsTablet(false);
+        } else if (window.innerWidth >= 600 && window.innerWidth < 900) {
+            setIsMobile(false);
+            setIsTablet(true);
         } else {
             setIsMobile(false);
+            setIsTablet(false);
         }
     }
 
     useEffect(() => {
+        // Add event listener to window resize event
         window.addEventListener('resize', handleResize);
+
+        // Call handleResize once to set initial state
         handleResize();
-        return () => window.removeEventListener('resize', handleResize);
+
+        // Clean up
+        return () => {
+            // Remove event listener when component is unmounted
+            window.removeEventListener('resize', handleResize);
+        };
     }, []);
 
     function tab(tabName) {
@@ -102,25 +122,40 @@ const AdminEvents = () => {
     }, [activeTab]); // Refetch events when activeTab changes
 
     return (
-        <>
+        <div className="absolute top-0 h-inherit w-full bg-white">
             <AdminNavbar />
             <h1 className="text-3xl font-bold mx-auto w-4/5 pl-10 pr-10 mb-5">Events</h1>
             <div className="mx-auto w-4/5 mb-10">
-                <div id="tabs-container" className="flex flex-row pl-5">
-                    <Button name="All" style={activeTab === "All" ? activeTabStyle : tabsStyle} onClick={() => tab("All")} />
-                    <Button name="Upcoming" style={activeTab === "Upcoming" ? activeTabStyle : tabsStyle} onClick={() => tab("Upcoming")}/>
-                    <Button name="Past" style={activeTab === "Past" ? activeTabStyle : tabsStyle} onClick={() => tab("Past")}/>
-                    <Button name="First Time" style={activeTab === "First Time" ? activeTabStyle : tabsStyle} onClick={() => tab("First Time")}/>
-                </div>
-                {isLoading ? <LoadingSpinner />: hasError ? <ErrorBox error={error} /> : isMobile ?
-                    <Table columns={mobileColumns} data={events} /> : <Table columns={columns} data={events}/> 
+                {isMobile ?
+                    <div id="tabs-container" className="flex flex-wrap pl-6">
+                        <select id="tabs-container" value={activeTab} className={tabsStyle} onChange={(e) => tab(e.target.value)}>
+                            <option value="All">All</option>
+                            <option value="Upcoming">Upcoming</option>
+                            <option value="Past">Past</option>
+                            <option value="First Time">First Time</option>
+                        </select>
+                    </div>
+                    :
+                    <div id="tabs-container" className="flex flex-wrap pl-6">
+                        <Button name="All" style={activeTab === "All" ? activeTabStyle : tabsStyle} onClick={() => tab("All")} />
+                        <Button name="Upcoming" style={activeTab === "Upcoming" ? activeTabStyle : tabsStyle} onClick={() => tab("Upcoming")}/>
+                        <Button name="Past" style={activeTab === "Past" ? activeTabStyle : tabsStyle} onClick={() => tab("Past")}/>
+                        <Button name="First Time" style={activeTab === "First Time" ? activeTabStyle : tabsStyle} onClick={() => tab("First Time")}/>
+                    </div>
+                }
+                {isLoading ? <LoadingSpinner />: hasError ? <ErrorBox error={error} /> 
+                    : isMobile ?
+                        <Table columns={mobileColumns} data={events} className="w-full"/> 
+                        : isTablet ? 
+                            <Table columns={tabletColumns} data={events} className="w-full"/> 
+                            : <Table columns={columns} data={events}/> 
                 }
                 <div className="flex flex-wrap gap-10 items-end justify-end pr-5">
                     <Button name="Add" style={buttonStyle}/>
                     <Button name="Delete" style={buttonStyle}/> 
                 </div>
             </div> 
-        </>  
+        </div>  
     )
 }
 
