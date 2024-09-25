@@ -59,7 +59,7 @@ const getInventory = async () => {
             inventorySizes s ON i.id = s.productId;
     `;
     try {
-        const results = await database.query(query);
+        const results = await database.execute(query);
         // Transform the results into the desired format
         const inventory = results[0].reduce((acc, row) => {
             // Check if the product already exists in the accumulator
@@ -114,7 +114,7 @@ const getItemsById = async (id) => {
         WHERE i.id = ?;
     `;
     try {
-        const results = await database.query(query, [id]);
+        const results = await database.execute(query, [id]);
          // Transform the results into the desired format
          const item = results[0].reduce((acc, row) => {
             if (!acc) {
@@ -162,7 +162,7 @@ const getItemsByProductName = async (productName) => {
         WHERE productName = ?;
     `;
     try {
-        const results = await database.query(query, [productName]);
+        const results = await database.execute(query, [productName]);
          // Transform the results into the desired format
          const item = results[0].reduce((acc, row) => {
             if (!acc) {
@@ -201,7 +201,7 @@ const updateItem = async (id, updates = {}) => {
     const query = `UPDATE inventory SET ${setClause} WHERE id = ?`;
 
     try {
-        await database.query(query, [...Object.values(updates), ...queryParams]);
+        await database.execute(query, [...Object.values(updates), ...queryParams]);
         return {message: "Item updated successfully"};
     } catch (err) {
         return {error: err.message};
@@ -219,7 +219,7 @@ const updateItemSizeQuantity = async (id, size, quantity) => {
 
     const query = `UPDATE inventorySizes SET quantity = ? WHERE productId = ? AND size = ?`;
     try {
-        await database.query(query, [quantity, id, size]);
+        await database.execute(query, [quantity, id, size]);
 
         if (result.affectedRows === 0) {
             return { error: "Item not found or no changes made" };
@@ -237,7 +237,7 @@ const deleteItem = async (id) => {
     const database = await connectionPool.getConnection();
     query = `DELETE FROM inventory WHERE id = ?;`;
     try {
-        await database.query(query, [id]);
+        await database.execute(query, [id]);
         return {message: "Item deleted successfully"};
     } catch (err) {
         return {error: err.message};

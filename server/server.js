@@ -497,7 +497,7 @@ app.post('/create-items', async (req, res) => {
   console.log(req.body);
   const { productName, description, price, sizes, image } = req.body;
 
-  if (!productName || !description || !price || !sizes) {
+  if (!productName || !description || price == null || price == undefined || !sizes) {
     return res.status(400).json({ error: "Missing required fields or invalid sizes format" });
   }
 
@@ -772,6 +772,7 @@ app.post("/api/submitPayment", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // app.listen(port, () => {
 //   console.log(`Server is running on http://localhost:${port}`);

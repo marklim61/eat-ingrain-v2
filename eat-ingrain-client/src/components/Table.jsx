@@ -5,7 +5,7 @@ const Table = ({ columns, data }) => {
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
 
     return (
-        <table {...getTableProps()} className="mx-auto max-w-4/5 mb-5">
+        <table {...getTableProps()} className="mx-auto w-full mb-5">
             <thead>
                 {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>

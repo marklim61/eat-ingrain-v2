@@ -59,6 +59,8 @@ const AdminEvents = () => {
             url = "http://localhost:3001/get-upcoming-events";
         } else if (activeTab === "Past") {
             url = "http://localhost:3001/get-past-events";
+        } else if (activeTab === "First Time") {
+            url = "http://localhost:3001/get-first-time-events";
         } else {
             url = "http://localhost:3001/get-events";
         }
@@ -66,11 +68,23 @@ const AdminEvents = () => {
         try {
             const res = await fetch(url);
             const data = await res.json();
+
+            console.log(data);
+            if (!Array.isArray(data) || data.length === 0) {
+                setEvents([]);
+                setHasError(true);
+                setError(`No ${activeTab} events found`);
+                return;
+            } else {
+                setHasError(false);
+                setError(null);
+            }
+
             const formattedData = data.map(event => ({
                 ...event,
                 date: new Date(event.date).toDateString(),
             }));
-            console.log(formattedData);
+            // console.log(formattedData);
             setEvents(formattedData);
         } catch (err) {
             console.error(err);
@@ -96,6 +110,7 @@ const AdminEvents = () => {
                     <Button name="All" style={activeTab === "All" ? activeTabStyle : tabsStyle} onClick={() => tab("All")} />
                     <Button name="Upcoming" style={activeTab === "Upcoming" ? activeTabStyle : tabsStyle} onClick={() => tab("Upcoming")}/>
                     <Button name="Past" style={activeTab === "Past" ? activeTabStyle : tabsStyle} onClick={() => tab("Past")}/>
+                    <Button name="First Time" style={activeTab === "First Time" ? activeTabStyle : tabsStyle} onClick={() => tab("First Time")}/>
                 </div>
                 {isLoading ? <LoadingSpinner />: hasError ? <ErrorBox error={error} /> : isMobile ?
                     <Table columns={mobileColumns} data={events} /> : <Table columns={columns} data={events}/> 
