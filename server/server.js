@@ -8,7 +8,7 @@ const cors = require("cors");
 const {swaggerDocs} = require('./swagger/swaggerDocs');
 const { order, getOrders, getNewOrders, getOrdersInTransit, getOrdersDelivered, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
 const { createEvent, getEvents, getPastEvents, getUpcomingEvents, updateEvent, deleteEvent } = require("./service/events");
-const { createItem, getInventory, updateItem, deleteItem } = require("./service/inventory");
+const { createItems, getInventory, getItemsById, getItemsByProductName, updateItem, updateItemSizeQuantity, deleteItem } = require("./service/inventory");
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -200,6 +200,61 @@ app.get("/get-upcoming-events", async (req, res) => {
 app.get("/get-inventory", async (req, res) => {
   try {
     const inventory = await getInventory();
+    res.status(200).json(inventory);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get inventory", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-inventory/id/{id}:
+ *   get:
+ *     summary: Get an item by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the item
+ *     responses:
+ *       200:
+ *         description: Returns the item
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-inventory/id/:id", async (req, res) => {
+  console.log(req.params.id);
+  try {
+    const inventory = await getItemsById(req.params.id);
+    res.status(200).json(inventory);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get inventory", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-inventory/item/{productName}:
+ *   get:
+ *     summary: Get an item by product name
+ *     parameters:
+ *       - in: path
+ *         name: productName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The product name of the item
+ *     responses:
+ *       200:
+ *         description: Returns the item
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-inventory/item/:productName", async (req, res) => {
+  try {
+    const inventory = await getItemsByProductName(req.params.productName);
     res.status(200).json(inventory);
   } catch (err) {
     res.status(500).json({ error: "Failed to get inventory", details: err.message });
@@ -405,9 +460,9 @@ app.post('/delete-event', async (req, res) => {
 
 /**
  * @openapi
- * /create-item:
+ * /create-items:
  *   post:
- *     summary: Create an item in the inventory
+ *     summary: Create an item/s in the inventory
  *     requestBody:
  *       required: true
  *       content:
@@ -421,20 +476,34 @@ app.post('/delete-event', async (req, res) => {
  *                 type: string
  *               price:
  *                 type: number
- *               size:
+ *               sizes:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     size:
+ *                       type: string
+ *                     quantity:
+ *                       type: integer
+ *               image:
  *                 type: string
- *               quantity:
- *                 type: number
  *     responses:
  *       200:
  *         description: Item created successfully
  *       500:
  *         description: Failed to create item
  */
-app.post('/create-item', async (req, res) => {
-  const { productName, description, price, size, quantity } = req.body;
+app.post('/create-items', async (req, res) => {
+  console.log(req.body);
+  const { productName, description, price, sizes, image } = req.body;
+
+  if (!productName || !description || !price || !sizes) {
+    return res.status(400).json({ error: "Missing required fields or invalid sizes format" });
+  }
+
   try {
-    const result = await createItem(productName, description, price, size, quantity);
+    const result = await createItems(productName, description, price, sizes, image);
+    console.log(1)
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: "Failed to create item", details: err.message });
@@ -544,10 +613,6 @@ app.patch('/update-event', async (req, res) => {
  *                 type: string
  *               price:
  *                 type: number
- *               size:
- *                 type: string
- *               quantity:
- *                 type: number
  *     responses:
  *       200:
  *         description: Item updated successfully
@@ -568,6 +633,48 @@ app.patch('/update-item', async (req, res) => {
     res.status(500).json({ error: "Failed to update Item", details: err.message });
   }
 });
+
+/**
+ * @openapi
+ * /update-item-size-quantity:
+ *   patch:
+ *     summary: Update an item size
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               size:
+ *                 type: string
+ *               quantity:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Item size updated successfully
+ *       500:
+ */
+app.patch('/update-item-size-quantity', async (req, res) => {
+  const { id, size, quantity } = req.body;
+
+  if (!id || !size || quantity === undefined || quantity === null) {
+    return res.status(400).json({ error: "Item ID, size, and quantity is required" });
+  }
+
+  if (quantity < 0) {
+    return res.status(400).json({ error: "Quantity cannot be negative" });
+  }
+
+  try {
+    const result = await updateItemSizeQuantity(id, size, quantity);
+    res.status(200).json(result);
+  } catch (err) { 
+    res.status(500).json({ error: "Failed to update item size", details: err.message });
+  }
+});
 //--------------------end of update endpoints----------------------------------------
 
 // Add this line to handle BigInt serialization
@@ -584,8 +691,22 @@ const client = new Client({
 });
 
 // Endpoint to serve product data
-app.get("/store-items", (req, res) => {
+app.get("/store-items", async (req, res) => {
   res.json(storeItems);
+  // try {
+  //   const res = await getInventory();
+  //   // const products = res.map((item) => ({
+  //   //   id: item.id,
+  //   //   productName: item.productName,
+  //   //   description: item.description,
+  //   //   price: item.price,
+  //   //   size: item.size,
+  //   //   quantity: item.quantity
+  //   // }))
+  //   res.status(200).json();
+  // } catch (err) {
+  //   res.status(500).json({ error: "Failed to get orders", details: err.message });
+  // }
 });
 
 app.get("/store-items/:id", (req, res) => {

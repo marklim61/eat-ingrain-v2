@@ -38,11 +38,21 @@ CREATE TABLE IF NOT EXISTS inventory (
   id INT AUTO_INCREMENT PRIMARY KEY,
   productName VARCHAR(255) NOT NULL,
   description VARCHAR(1000) NOT NULL,
-  price DECIMAL(10, 2) NOT NULL,
-  size VARCHAR(10) NOT NULL,
-  quantity INT NOT NULL,  
+  price DECIMAL(10, 2) NOT NULL, 
+  image VARCHAR(2048),
   dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP
 )`;
+
+const createInventorySizesTableQuery = `
+CREATE TABLE IF NOT EXISTS inventorySizes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  productId INT NOT NULL,
+  size VARCHAR(50),
+  quantity INT,
+  dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (productId) REFERENCES inventory(id) ON DELETE CASCADE
+)`;
+
 
 async function initializeDatabase() {
   const connection = await mysql.createConnection({
@@ -67,6 +77,9 @@ async function initializeDatabase() {
 
     await connection.query(createInventoryTableQuery);
     console.log("Inventory table checked/created.");
+
+    await connection.query(createInventorySizesTableQuery);
+    console.log("Inventory sizes table checked/created.");
   } catch (err) {
     console.error("Database initialization error:", err.message);
   } finally {
