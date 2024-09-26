@@ -57,7 +57,7 @@ const AdminOrders = () => {
         let url = "";
 
         if (activeTab === "New") {
-            url = "http://localhost:3001//get-new-orders";
+            url = "http://localhost:3001/get-new-orders";
         } else if (activeTab === "In Transit") {
             url = "http://localhost:3001/get-orders-in-transit";
         } else if (activeTab === "Delivered") {
