@@ -2,15 +2,14 @@ import AdminNavbar from "../components/AdminNavBar"
 import React, { useState, useEffect } from "react"
 import Button from "../components/Button";
 import Table from "../components/Table";
-import { OrdersData, OrdersColumns, OrdersMobileData, OrdersMobileColumns } from "./FakeData";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorBox from "../components/ErrorBox";
+import { OrdersColumns, OrdersMobileColumns, OrdersTabletColumns, OrdersDesktopColumns } from "../components/AdminColumns";
 
 const AdminOrders = () => {
     const tabsStyle = "relative z-0 block w-[100px] border-2 border-[#83AF9B] bg-[#ECE5CE]"
     const activeTabStyle = "relative z-0 block w-[100px] border-2 border-[#83AF9B] bg-[#FFDDC1]";
     const buttonStyle = "relative z-0 block w-[100px] border border-[#83AF9B] rounded-md shadow-sm shadow-[#83AF9B] bg-[#ECE5CE]"
-    // const filterInputStyle = "w-[100px] border border-[#83AF9B] rounded-md shadow-sm shadow-[#83AF9B] bg-[#ECE5CE] px-4 py-2 pr-8 appearance-none focus:outline-none hover:focus:ring-2 hover:focus:ring-indigo-500"
     const filterInputStyle = "border border-[#83AF9B] pl-2 pr-2"
 
     const [isMobile, setIsMobile] = useState(false);
@@ -22,45 +21,6 @@ const AdminOrders = () => {
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState(null);
     const [filterState, setFilterState] = useState(null);
-
-    const columns = [
-        { Header: "Id", accessor: "id" },
-        { Header: "First Name", accessor: "firstName" },
-        { Header: "Last Name", accessor: "lastName" },
-        { Header: "Email", accessor: "email" },
-        { Header: "Address", accessor: "address" },
-        { Header: "Apt. Number", accessor: "appartmentNumber" },
-        { Header: "City", accessor: "city" },
-        { Header: "Country", accessor: "country" },
-        { Header: "State", accessor: "state" },
-        { Header: "Zip Code", accessor: "zipCode" },
-        { Header: "Phone", accessor: "phoneNumber" },
-        { Header: "Status", accessor: "status" },
-        { Header: "Date Created", accessor: "dateCreated" },
-    ];
-    
-    const mobileColumns = [
-        { Header: "Id", accessor: "id" },
-        { Header: "Last Name", accessor: "lastName" },
-        { Header: "Status", accessor: "status" },
-    ];
-
-    const tabletColumns = [
-        { Header: "Id", accessor: "id" },
-        { Header: "First Name", accessor: "firstName" },
-        { Header: "Last Name", accessor: "lastName" },
-        { Header: "Status", accessor: "status" },
-    ];
-
-    const desktopColumns = [
-        { Header: "Id", accessor: "id" },
-        { Header: "First Name", accessor: "firstName" },
-        { Header: "Last Name", accessor: "lastName" },
-        { Header: "Email", accessor: "email" },
-        { Header: "Phone", accessor: "phoneNumber" },
-        { Header: "Status", accessor: "status" },
-    ];
-
 
     const handleResize = () => {
         if (window.innerWidth < 600) {
@@ -186,10 +146,10 @@ const AdminOrders = () => {
                 </div>
                 {   isLoading ? <div className="block w-full"><LoadingSpinner /></div>
                     : hasError ? <ErrorBox error={error} /> 
-                    : isMobile ? <Table columns={mobileColumns} data={orders} /> 
-                    : isTablet ? <Table columns={tabletColumns} data={orders} /> 
-                    : isDesktop ? <Table columns={desktopColumns} data={orders} /> 
-                    : <Table columns={columns} data={orders}/> 
+                    : isMobile ? <Table columns={OrdersMobileColumns} data={orders} /> 
+                    : isTablet ? <Table columns={OrdersTabletColumns} data={orders} /> 
+                    : isDesktop ? <Table columns={OrdersDesktopColumns} data={orders} /> 
+                    : <Table columns={OrdersColumns} data={orders}/> 
                 }
                 <div className="flex flex-wrap gap-10 items-end justify-end pr-5 w-full">
                     <Button name="Add" style={buttonStyle}/>

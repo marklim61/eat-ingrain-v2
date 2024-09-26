@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import Table from "../components/Table";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorBox from "../components/ErrorBox";
+import { EventsColumns, EventsMobileColumns, EventsTabletColumns } from "../components/AdminColumns";
 
 const AdminEvents = () => {
     const tabsStyle = "relative z-0 block w-[100px] border-2 border-[#83AF9B] bg-[#ECE5CE]"
@@ -18,27 +19,6 @@ const AdminEvents = () => {
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState(null);
 
-    const columns = [
-        { Header: "Id", accessor: "id" },
-        { Header: "Title", accessor: "title" },
-        { Header: "Address", accessor: "address" },
-        { Header: "Date", accessor: "date" },
-        { Header: "Time", accessor: "time" },
-        { Header: "Description", accessor: "description" },
-        { Header: "Date Created", accessor: "dateCreated" },
-        { Header: "Image", accessor: "image" },
-    ];
-    
-    const mobileColumns = [
-        { Header: "Title", accessor: "title" },
-    ];
-
-    const tabletColumns = [
-        { Header: "Title", accessor: "title" },
-        { Header: "Address", accessor: "address" },
-        { Header: "Date", accessor: "date" },
-        { Header: "Time", accessor: "time" },
-    ];
     
     const handleResize = () => {
         if (window.innerWidth < 600) {
@@ -143,12 +123,11 @@ const AdminEvents = () => {
                         <Button name="First Time" style={activeTab === "First Time" ? activeTabStyle : tabsStyle} onClick={() => tab("First Time")}/>
                     </div>
                 }
-                {isLoading ? <LoadingSpinner />: hasError ? <ErrorBox error={error} /> 
-                    : isMobile ?
-                        <Table columns={mobileColumns} data={events} className="w-full"/> 
-                        : isTablet ? 
-                            <Table columns={tabletColumns} data={events} className="w-full"/> 
-                            : <Table columns={columns} data={events}/> 
+                {   isLoading ? <LoadingSpinner />
+                    : hasError ? <ErrorBox error={error} /> 
+                    : isMobile ? <Table columns={EventsMobileColumns} data={events} className="w-full"/> 
+                    : isTablet ? <Table columns={EventsTabletColumns} data={events} className="w-full"/> 
+                    : <Table columns={EventsColumns} data={events}/> 
                 }
                 <div className="flex flex-wrap gap-10 items-end justify-end pr-5">
                     <Button name="Add" style={buttonStyle}/>

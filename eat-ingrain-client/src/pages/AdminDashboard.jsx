@@ -9,7 +9,7 @@ import { NavLink } from "react-router-dom"
 import IngrainLogo from "../assets/transparentINGRAIN.png"
 const AdminDashboard = () => {
     return (
-        <div className="absolute top-0 bg-white">
+        <div className="absolute top-0 bg-white w-full">
             <div className="mx-auto w-4/5 mt-10 mb-5 flex flex-wrap justify-between items-center">
                 <NavLink to="/admin" className="mx-auto">
                     <img src={IngrainLogo} alt="Logo" className="h-auto max-h-[8rem] min-h-[4rem] md:h-[calc(100vw/12)] sm:h-[calc(100vw/12)] cursor-pointer z-10" />
