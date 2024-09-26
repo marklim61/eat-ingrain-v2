@@ -107,7 +107,7 @@ const AdminOrders = () => {
     }   
 
     return (
-        <div className="absolute top-0 bg-white">
+        <div className="absolute top-0 h-inherit w-full bg-white">
             <AdminNavbar />
             <h1 className="text-3xl font-bold mx-auto w-4/5 pl-10 pr-10 mb-5">Orders</h1>
             <div className="mx-auto w-4/5 mb-10 flex flex-wrap justify-between">

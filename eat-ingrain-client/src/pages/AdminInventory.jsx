@@ -22,9 +22,10 @@ const AdminInventory = () => {
     }, []);
     
     return (
-        <div className="absolute top-0 bg-white">
+        <div className="absolute top-0 h-inherit w-full bg-white">
             <AdminNavbar />
-            <div className="mx-auto inline-block mb-10">
+            <h1 className="text-3xl font-bold mx-auto w-4/5 pl-10 pr-10 mb-5">Orders</h1>
+            <div className="mx-auto w-4/5 mb-10">
                 {isMobile ? 
                     <Table columns={InventoryMobileColumns} data={InventoryMobileData} /> : <Table columns={InventoryColumns} data={InventoryData} />
                 }
