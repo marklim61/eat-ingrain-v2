@@ -92,7 +92,7 @@ const Events = () => {
     <>
       <BackgroundBanner bgImage={event_bg} />
       {/* <div className="relative z-1 flex flex-col justify-center items-center mb-24 p-12"> */}
-      <div className="relative z-1 text-left flex flex-col min-h-screen h-full w-4/5 mx-auto p-12 pt-[200px]">
+      <div className="relative z-1 flex flex-col justify-center items-center min-h-screen">
         <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
           NO UPCOMING EVENTS
         </h1>

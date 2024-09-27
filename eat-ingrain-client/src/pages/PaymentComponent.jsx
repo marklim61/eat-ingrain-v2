@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -9,9 +9,12 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const PaymentComponent = () => {
-  const { cartItems, calculateSubtotal, formatPrice } = useContext(CartContext);
+  const { cartItems, calculateSubtotal, clearCart } = useContext(CartContext);
   const appId = import.meta.env.VITE_APP_SQUARE_APP_ID; // Use environment variable
   const locationId = import.meta.env.VITE_APP_SQUARE_LOCATION_ID;
+  const navigate = useNavigate(); // Use the navigate hook for redirection
+
+  const modalRef = useRef(null); // Create a ref for the modal
 
   const calculateShippingHandling = () => {
     // Example: flat rate shipping
@@ -51,7 +54,6 @@ const PaymentComponent = () => {
 
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -92,8 +94,9 @@ const PaymentComponent = () => {
       const result = response.data;
 
       if (response.status === 200) {
+        clearCart();
         setPaymentStatus({ success: true, result });
-        navigate("/success");
+        modalRef.current.showModal(); // Show modal on success
       } else {
         setPaymentStatus({
           success: false,
@@ -112,7 +115,7 @@ const PaymentComponent = () => {
       <Navbar />
       <div className="flex items-start justify-center min-h-screen">
         {/* Main Card */}
-        <div className="flex flex-col p-8 shadow-lg rounded-lg w-[65%] max-w-full mt-64 mb-36 bg-ingrain-board-color">
+        <div className="flex flex-col p-4 md:p-8 shadow-lg rounded-lg w-full md:w-[65%] max-w-full mt-48 md:mt-64 mb-36 bg-ingrain-board-color">
           <ul className="steps mb-6">
             <li className="step step-primary">Cart</li>
             <li className="step step-primary">Payment</li>
@@ -121,21 +124,21 @@ const PaymentComponent = () => {
           </ul>
 
           {/* Left Section: Shipping Info */}
-          <div className="flex flex-grow space-x-8">
+          <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
             <div className="flex-1 flex flex-col">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-4xl font-bold aesthet-nova">
+                <h2 className="text-2xl md:text-4xl font-bold aesthet-nova">
                   Shipping Information
                 </h2>
                 <NavLink
                   to="/shopping-cart"
-                  className="text-lg aesthet-nova-h1 hover:underline hover:text-ingrain-color-orange"
+                  className="text-md md:text-lg aesthet-nova-h1 hover:underline hover:text-ingrain-color-orange"
                 >
                   <FontAwesomeIcon icon={faArrowLeft} /> Back to Cart
                 </NavLink>
               </div>
               {/* Contact Information */}
-              <form className="flex-1 flex flex-col overflow-auto">
+              <form className="flex-1 flex flex-col">
                 <div className="mb-6">
                   <label
                     htmlFor="email"
@@ -155,7 +158,7 @@ const PaymentComponent = () => {
                 </div>
 
                 {/* Name Fields */}
-                <div className="flex space-x-4 mb-6">
+                <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
                   <div className="flex-1">
                     <label
                       htmlFor="firstName"
@@ -173,7 +176,7 @@ const PaymentComponent = () => {
                       required
                     />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 mt-4 md:mt-0">
                     <label
                       htmlFor="lastName"
                       className="font-semibold aesthet-nova-h3 text-md"
@@ -361,8 +364,10 @@ const PaymentComponent = () => {
             </div>
 
             {/* Right Section: Summary */}
-            <div className="w-1/3 flex flex-col bg-ingrain-color-orange shadow-lg rounded-lg">
-              <div className="p-4 text-2xl font-semibold">Summary</div>
+            <div className="w-full md:w-1/3 flex flex-col bg-ingrain-color-orange shadow-lg rounded-lg">
+              <div className="p-4 text-xl md:text-2xl font-semibold">
+                Summary
+              </div>
               <div className="flex-grow p-4 overflow-y-auto">
                 <ul className="max-h-60">
                   {cartItems.map((item, index) => (
@@ -373,26 +378,26 @@ const PaymentComponent = () => {
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-16 h-16 object-cover rounded-lg"
+                        className="w-12 md:w-16 h-12 md:h-16 object-cover rounded-lg"
                       />
                       <div className="flex flex-col justify-between w-full ml-4">
                         <div>
-                          <h3 className="text-lg font-semibold aesthet-nova-h1">
+                          <h3 className="text-sm md:text-lg font-semibold aesthet-nova-h1">
                             {item.name}
                           </h3>
-                          <p className="text-gray-500 aesthet-nova-h3 ">
+                          <p className="text-gray-500 text-xs md:text-sm aesthet-nova-h3 ">
                             Size: {item.size}
                           </p>
                           <div className="flex items-center">
                             <div className="flex items-center">
-                              <p className="text-gray-500 aesthet-nova-h3 ">
+                              <p className="text-gray-500 aesthet-nova-h3 text-xs md:text-sm">
                                 Quantity: {item.quantity}
                               </p>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <p className="font-semibold aesthet-nova-h2 ml-auto">
+                      <p className="font-semibold aesthet-nova-h2 ml-auto text-sm md:text-lg">
                         ${(item.priceInCents / 100).toFixed(2)}
                       </p>
                     </li>
@@ -400,7 +405,7 @@ const PaymentComponent = () => {
                 </ul>
               </div>
               <div className="flex-shrink-0 p-4">
-                <div className="flex justify-between mb-4">
+                <div className="flex justify-between mb-4 text-sm md:text-lg">
                   <span className="text-lg font-semibold">
                     Subtotal ({itemCount} {itemsLabel})
                   </span>
@@ -428,6 +433,32 @@ const PaymentComponent = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Success Modal */}
+      <dialog ref={modalRef} id="order_success_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Order Successful!</h3>
+          <p className="py-4">
+            Thank you for your purchase. Your order has been placed
+            successfully!
+          </p>
+          <p className="py-4">
+            A confirmation email has been sent to: {formData.email}. For any
+            questions or concerns, please contact our customer support at
+            support@ecommerce.com.
+          </p>
+        </div>
+        <form
+          method="dialog"
+          className="modal-backdrop"
+          onClick={() => {
+            modalRef.current.close();
+            navigate("/shop");
+          }}
+        >
+          <button>close</button>
+        </form>
+      </dialog>
     </div>
   );
 };

@@ -1,39 +1,69 @@
-// CartContext.jsx
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  // Load cart items from localStorage if they exist, otherwise start with an empty array
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    let initialCart = [];
+    try {
+      initialCart = savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Error parsing cartItems from localStorage:", error);
+    }
+    return initialCart;
+  });
+
+
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const addToCart = (product, quantity, size) => {
-    console.log("Adding to cart:", { product, quantity, size }); // Debugging
-    const existingItemIndex = cartItems.findIndex(
-      (item) => item.id === product.id && item.size === size
-    );
-    if (existingItemIndex >= 0) {
-      const updatedCartItems = [...cartItems];
-      updatedCartItems[existingItemIndex].quantity += parseInt(quantity); // Increment existing item quantity
-      setCartItems(updatedCartItems);
-    } else {
-      const newItem = { ...product, quantity: parseInt(quantity), size };
-      setCartItems([...cartItems, newItem]);
-    }
+  // Effect to sync cart items with localStorage
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
 
-    handleCartOpen();
-  };
+  const addToCart = useCallback(
+    (product, quantity, size) => {
+      console.log("Adding to cart:", { product, quantity, size }); // Debugging
+      if (quantity <= 0) {
+        console.warn("Quantity must be greater than zero.");
+        return;
+      }
+
+      const existingItemIndex = cartItems.findIndex(
+        (item) => item.id === product.id && item.size === size
+      );
+      if (existingItemIndex >= 0) {
+        const updatedCartItems = [...cartItems];
+        updatedCartItems[existingItemIndex].quantity += parseInt(quantity); // Increment existing item quantity
+        setCartItems(updatedCartItems);
+      } else {
+        const newItem = { ...product, quantity: parseInt(quantity), size };
+        setCartItems([...cartItems, newItem]);
+      }
+
+      handleCartOpen();
+    },
+    [cartItems]
+  );
 
   const updateQuantity = (index, quantity) => {
-    const updatedCartItems = [...cartItems];
-    updatedCartItems[index].quantity = quantity; // Update the quantity
-    setCartItems(updatedCartItems);
+    if (quantity <= 0) {
+      removeItem(index);
+    } else {
+      const updatedCartItems = [...cartItems];
+      updatedCartItems[index].quantity = quantity; // Update the quantity
+      setCartItems(updatedCartItems);
+    }
   };
 
   const removeItem = (index) => {
-    const updatedCartItems = [...cartItems];
-    updatedCartItems.splice(index, 1);
-    setCartItems(updatedCartItems);
+    setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
+  };
+
+  const clearCart = () => {
+    setCartItems([]); // Clear cart items
   };
 
   const handleCartOpen = () => {
@@ -75,8 +105,9 @@ export const CartProvider = ({ children }) => {
         handleCartClose,
         updateQuantity,
         removeItem,
+        clearCart,
         calculateSubtotal,
-        formatPrice
+        formatPrice,
       }}
     >
       {children}
