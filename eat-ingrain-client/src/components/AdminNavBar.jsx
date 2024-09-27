@@ -1,14 +1,31 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import ingrain_Logo from '../assets/transparentINGRAIN.png'
+import IngrainLogo from '../assets/transparentINGRAIN.png'
+import Dropdown from "../components/Dropdown"
+import Button from "../components/Button"
 
 const Navbar = () => {
+  const buttonStyle = "relative z-0 block w-[100px] border border-[#83AF9B] rounded-md shadow-sm shadow-[#83AF9B] bg-[#ECE5CE] px-4 py-2 pr-8"
   return (
-    <div className="relative w-full flex justify-center p-10 z-10">
-        <NavLink to="/admin">
-          <img src={ingrain_Logo} alt="Logo" className="h-auto max-h-[8rem] min-h-[4rem] md:h-[calc(100vw/12)] sm:h-[calc(100vw/12)] cursor-pointer z-10" />
+  <>
+    <div id="AdminNavbarContainer" className="mx-auto w-4/5 flex flex-wrap justify-between gap-10 p-10 z-10">
+      <NavLink to="/admin">
+        <img src={IngrainLogo} alt="Logo" className="h-10" />
+      </NavLink>
+      <div className="flex sm:flex-row flex-col gap-10">
+        <NavLink to="/admin/inventory">
+          <Button name="Inventory" style={buttonStyle}/>
         </NavLink>
+        <NavLink to="/admin/events">
+          <Button name="Events" style={buttonStyle}/>
+        </NavLink>
+        <NavLink to="/admin/orders">
+          <Button name="Orders" style={buttonStyle}/>
+        </NavLink>
+        <Dropdown /> 
       </div>
+    </div>
+  </>  
   )
 }
 

@@ -34,6 +34,45 @@ const getOrders = async () => {
     }
 };
 
+const getNewOrders = async () => {
+    const database = await connectionPool.getConnection();
+
+    try {
+        const orders = await database.query("SELECT * FROM orders WHERE status = 'pending'");
+        return orders[0];
+    } catch (err) {
+        return {error: err.message};
+    } finally {
+        database.release();
+    }
+};
+
+const getOrdersInTransit = async () => {
+    const database = await connectionPool.getConnection();
+
+    try {
+        const orders = await database.query("SELECT * FROM orders WHERE status = 'in transit'");
+        return orders[0];
+    } catch (err) {
+        return {error: err.message};
+    } finally {
+        database.release();
+    }
+};
+
+const getOrdersDelivered = async () => {
+    const database = await connectionPool.getConnection();
+
+    try {
+        const orders = await database.query("SELECT * FROM orders WHERE status = 'delivered'");
+        return orders[0];
+    } catch (err) {
+        return {error: err.message};
+    } finally {
+        database.release();
+    }
+};
+
 const getOrdersByPhoneNumber = async (phoneNumber) => {
     const database = await connectionPool.getConnection();
 
@@ -76,6 +115,9 @@ const removeOrderByPhoneNumber = async (phoneNumber) => {
 module.exports = {
     order,
     getOrders,
+    getNewOrders,
+    getOrdersInTransit,
+    getOrdersDelivered,
     getOrdersByPhoneNumber,
     removeOrderById,
     removeOrderByPhoneNumber

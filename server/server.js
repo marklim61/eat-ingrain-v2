@@ -6,9 +6,9 @@ const { Client } = require("square");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const {swaggerDocs} = require('./swagger/swaggerDocs');
-const { order, getOrders, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
+const { order, getOrders, getNewOrders, getOrdersInTransit, getOrdersDelivered, getOrdersByPhoneNumber, removeOrderById, removeOrderByPhoneNumber } = require("./service/orders");
 const { createEvent, getEvents, getPastEvents, getUpcomingEvents, updateEvent, deleteEvent } = require("./service/events");
-
+const { createItems, getInventory, getItemsById, getItemsByProductName, updateItem, updateItemSizeQuantity, deleteItem } = require("./service/inventory");
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -38,6 +38,66 @@ app.get("/get-orders", async (req, res) => {
     res.status(500).json({ error: "Failed to get orders", details: err.message });
   }
 });
+
+/**
+ * @openapi
+ * /get-new-orders:
+ *   get:
+ *     summary: Get all new orders
+ *     responses:
+ *       200:
+ *         description: Returns an array of orders
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-new-orders", async (req, res) => {
+  try {
+    const orders = await getNewOrders();
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-orders-in-transit:
+ *   get:
+ *     summary: Get all orders in transit
+ *     responses:
+ *       200:
+ *         description: Returns an array of orders
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-orders-in-transit", async (req, res) => {
+  try {
+    const orders = await getOrdersInTransit();
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-orders-delivered:
+ *   get:
+ *     summary: Get all orders delivered
+ *     responses:
+ *       200:
+ *         description: Returns an array of orders
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-orders-delivered", async (req, res) => {
+  try {
+    const orders = await getOrdersDelivered();
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get orders", details: err.message });
+  }
+})
 
 /**
  * @openapi
@@ -123,6 +183,81 @@ app.get("/get-upcoming-events", async (req, res) => {
     res.status(200).json(events);
   } catch (err) {
     res.status(500).json({ error: "Failed to get events", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-inventory:
+ *   get:
+ *     summary: Get all items in the inventory
+ *     responses:
+ *       200:
+ *         description: Returns an array of inventory
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-inventory", async (req, res) => {
+  try {
+    const inventory = await getInventory();
+    res.status(200).json(inventory);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get inventory", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-inventory/id/{id}:
+ *   get:
+ *     summary: Get an item by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the item
+ *     responses:
+ *       200:
+ *         description: Returns the item
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-inventory/id/:id", async (req, res) => {
+  console.log(req.params.id);
+  try {
+    const inventory = await getItemsById(req.params.id);
+    res.status(200).json(inventory);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get inventory", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /get-inventory/item/{productName}:
+ *   get:
+ *     summary: Get an item by product name
+ *     parameters:
+ *       - in: path
+ *         name: productName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The product name of the item
+ *     responses:
+ *       200:
+ *         description: Returns the item
+ *       500:
+ *         description: Internal server error
+ */
+app.get("/get-inventory/item/:productName", async (req, res) => {
+  try {
+    const inventory = await getItemsByProductName(req.params.productName);
+    res.status(200).json(inventory);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get inventory", details: err.message });
   }
 })
 // --------------------end of get endpoints----------------------------------------
@@ -293,6 +428,26 @@ app.post('/create-event', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /delete-event:
+ *   post:
+ *     summary: Delete an event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Event deleted successfully
+ *       500:
+ *         description: Failed to delete event
+ */
 app.post('/delete-event', async (req, res) => {
   const { id } = req.body;
   try {
@@ -300,6 +455,88 @@ app.post('/delete-event', async (req, res) => {
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: "Failed to delete event", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /create-items:
+ *   post:
+ *     summary: Create an item/s in the inventory
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object 
+ *             properties:
+ *               productName:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               sizes:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     size:
+ *                       type: string
+ *                     quantity:
+ *                       type: integer
+ *               image:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Item created successfully
+ *       500:
+ *         description: Failed to create item
+ */
+app.post('/create-items', async (req, res) => {
+  console.log(req.body);
+  const { productName, description, price, sizes, image } = req.body;
+
+  if (!productName || !description || price == null || price == undefined || !sizes) {
+    return res.status(400).json({ error: "Missing required fields or invalid sizes format" });
+  }
+
+  try {
+    const result = await createItems(productName, description, price, sizes, image);
+    console.log(1)
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create item", details: err.message });
+  }
+})
+
+/**
+ * @openapi
+ * /delete-item:
+ *   post:
+ *     summary: Delete an item from the inventory
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Item deleted successfully
+ *       500:
+ *         description: Failed to delete item
+ */
+app.post('/delete-item', async (req, res) => {
+  const { id } = req.body;
+  try {
+    const result = await deleteItem(id);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete item", details: err.message });
   }
 })
 //--------------------end of post endpoints----------------------------------------
@@ -356,6 +593,88 @@ app.patch('/update-event', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /update-item:
+ *   patch:
+ *     summary: Update an item
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               productName:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Item updated successfully
+ *       500:
+ *         description: Failed to update item
+ */ 
+app.patch('/update-item', async (req, res) => {
+  const { id, ...updateFields } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "Item ID is required" });
+  }
+
+  try {
+    const result = await updateItem(id, updateFields);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update Item", details: err.message });
+  }
+});
+
+/**
+ * @openapi
+ * /update-item-size-quantity:
+ *   patch:
+ *     summary: Update an item size
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               size:
+ *                 type: string
+ *               quantity:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Item size updated successfully
+ *       500:
+ */
+app.patch('/update-item-size-quantity', async (req, res) => {
+  const { id, size, quantity } = req.body;
+
+  if (!id || !size || quantity === undefined || quantity === null) {
+    return res.status(400).json({ error: "Item ID, size, and quantity is required" });
+  }
+
+  if (quantity < 0) {
+    return res.status(400).json({ error: "Quantity cannot be negative" });
+  }
+
+  try {
+    const result = await updateItemSizeQuantity(id, size, quantity);
+    res.status(200).json(result);
+  } catch (err) { 
+    res.status(500).json({ error: "Failed to update item size", details: err.message });
+  }
+});
 //--------------------end of update endpoints----------------------------------------
 
 // Add this line to handle BigInt serialization
@@ -372,8 +691,22 @@ const client = new Client({
 });
 
 // Endpoint to serve product data
-app.get("/store-items", (req, res) => {
+app.get("/store-items", async (req, res) => {
   res.json(storeItems);
+  // try {
+  //   const res = await getInventory();
+  //   // const products = res.map((item) => ({
+  //   //   id: item.id,
+  //   //   productName: item.productName,
+  //   //   description: item.description,
+  //   //   price: item.price,
+  //   //   size: item.size,
+  //   //   quantity: item.quantity
+  //   // }))
+  //   res.status(200).json();
+  // } catch (err) {
+  //   res.status(500).json({ error: "Failed to get orders", details: err.message });
+  // }
 });
 
 app.get("/store-items/:id", (req, res) => {
@@ -439,6 +772,7 @@ app.post("/api/submitPayment", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // app.listen(port, () => {
 //   console.log(`Server is running on http://localhost:${port}`);
