@@ -9,6 +9,7 @@ export { default as ShoppingCart } from './ShoppingCart';
 export { default as PaymentComponent } from './PaymentComponent';
 export { default as SuccessPage } from './SuccessPage';
 export { default as AdminDashboard } from './AdminDashboard';
-export { default as AdminEvents } from './AdminEvents.jsx';
+// export { default as AdminEvents } from './AdminEvents.jsx';
 export { default as AdminOrders } from './AdminOrders.jsx';
 export { default as AdminInventory } from './AdminInventory.jsx';
+export { default as AdminEvents } from './AdminEvents_v2.jsx';

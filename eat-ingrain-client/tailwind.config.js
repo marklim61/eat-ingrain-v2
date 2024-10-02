@@ -29,37 +29,37 @@ export default {
         mytheme: {
           primary: "#F16935",
 
-          "primary-content": "#140401",
+          "primary-content": "#000000",
 
           secondary: "#00ff00",
 
-          "secondary-content": "#001600",
+          "secondary-content": "#F16935",
 
-          accent: "#00ff00",
+          accent: "#F16935",
 
-          "accent-content": "#001600",
+          "accent-content": "#F16935",
 
-          neutral: "#ff00ff",
+          neutral: "#F16935",
 
-          "neutral-content": "#160016",
+          "neutral-content": "#000000",
 
-          "base-100": "F16935",
+          "base-100": "ECE5CE",
 
-          "base-200": "#d25c2e",
+          "base-200": "#ff723a",
 
-          "base-300": "#b34e25",
+          "base-300": "#F16935",
 
           "base-content": "#140401",
 
-          info: "#ff00ff",
+          info: "#F16935",
 
-          "info-content": "#160016",
+          "info-content": "#F16935",
 
-          success: "#00ff00",
+          success: "#F16935",
 
-          "success-content": "#001600",
+          "success-content": "#F16935",
 
-          warning: "#00ff00",
+          warning: "#F16935",
 
           "warning-content": "#001600",
 
