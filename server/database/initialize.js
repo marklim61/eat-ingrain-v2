@@ -24,7 +24,6 @@ const createEventsTableQuery = `
 CREATE TABLE IF NOT EXISTS events (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
-  nameOfPlace VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
   date DATE NOT NULL,
   time VARCHAR(255) NOT NULL,

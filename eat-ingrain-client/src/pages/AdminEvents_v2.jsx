@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AdminNavbar from "../components/AdminNavBar";
 import EditIcon from "../assets/edit.png";
+import AdminEventsModal from "../components/AdminEventsModal";
 
 const useFetchEvents = (currentTab) => {
   const [events, setEvents] = useState([]);
@@ -9,50 +10,49 @@ const useFetchEvents = (currentTab) => {
   const [error, setError] = useState(null);
   const [hasError, setHasError] = useState(false);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      let url = getEventsUrl(currentTab);
+  const fetchEvents = async () => {
+    setLoading(true);
+    let url = getEventsUrl(currentTab);
 
-      try {
-        const res = await axios.get(url);
-        const data = Array.isArray(res.data) ? res.data : [];
+    try {
+      const res = await axios.get(url);
+      // console.log("Response data:", res.data); // inspect the data
+      const data = Array.isArray(res.data) ? res.data : [];
 
-        if (data.length === 0) {
-          throw new Error(`No ${currentTab} events found`);
-        }
-
-        const formattedData = formatEventDates(data);
-        setEvents(formattedData);
-        setHasError(false);
-      } catch (err) {
-        setEvents([]);
-        setHasError(true);
-        // setError(err.message);
-        setError(`No ${currentTab} events found`);
-      } finally {
-        setLoading(false);
+      if (data.length === 0) {
+        throw new Error(`No ${currentTab} events found`);
       }
-    };
 
+      // filter events for the timeline tab to include only first-time events
+      const filteredData = currentTab === "Timeline" ? data.filter(event => event.firstTime) : data;
+
+      const formattedData = formatEventDates(filteredData);
+      setEvents(formattedData);
+      setHasError(false);
+    } catch (err) {
+      setEvents([]);
+      setHasError(true);
+      setError(`No ${currentTab} events found`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchEvents();
   }, [currentTab]);
 
-  return { events, loading, error, hasError };
+  return { events, loading, error, hasError, setEvents, fetchEvents };
 };
 
-// Helper functions
 const getEventsUrl = (tab) => {
-  switch (tab) {
-    case "Upcoming":
-      return "http://localhost:3001/get-upcoming-events";
-    case "Past":
-      return "http://localhost:3001/get-past-events";
-    case "First Time":
-      return "http://localhost:3001/get-first-time-events";
-    default:
-      return "http://localhost:3001/get-events";
-  }
+  const urls = {
+    Upcoming: "http://localhost:3001/get-upcoming-events",
+    Past: "http://localhost:3001/get-past-events",
+    Timeline: "http://localhost:3001/get-first-time-events",
+    Duplicates: "http://localhost:3001/get-duplicate-events",
+  };
+  return urls[tab] || "http://localhost:3001/get-events";
 };
 
 const formatEventDates = (events) =>
@@ -71,7 +71,7 @@ const truncateDescription = (description) => {
 // Tab Menu Component inside the same file
 const TabMenu = ({ currentTab, setCurrentTab }) => (
   <ul className="menu menu-horizontal bg-[#ff723a] rounded-lg rounded-bl-none rounded-br-none border border-[#F16935] border-b-0 p-0 text-xl">
-    {["All", "Upcoming", "Past", "First Time"].map((tab) => (
+    {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
       <li
         key={tab}
         className={`cursor-pointer ${
@@ -113,7 +113,6 @@ const EventRow = ({
     </th>
     <th className="p-1 text-md">{event.id}</th>
     <td className="p-1 text-lg">{event.title}</td>
-    <td className="p-1 text-lg">{event.nameOfPlace}</td>
     <td className="p-1 text-lg">{event.address}</td>
     <td className="p-1 text-lg">{event.date}</td>
     <td className="p-1 text-lg">{event.time}</td>
@@ -125,7 +124,7 @@ const EventRow = ({
         className="btn btn-sm bg-ingrain-board-color hover:bg-neutral-950"
         onClick={(e) => {
           e.stopPropagation(); // Prevent the row click event
-          onEditClick(event.id); // Handle the edit button click
+          onEditClick(event); // pass the whole event object
         }}
       >
         <img src={EditIcon} alt="Edit" className="w-4 h-4" />
@@ -146,72 +145,76 @@ const EventTable = ({
   handleEditClick,
 }) => (
   <div className="overflow-x-auto w-full bg-ingrain-board-color border border-[#F16935] border-tl-none rounded-lg rounded-tl-none p-1">
-    <div className="overflow-x-auto w-full ">
-      <table className="table table-xs table-pin-rows table-pin-cols w-full">
-        <thead>
+    <table className="table table-xs table-pin-rows table-pin-cols w-full">
+      <thead>
+        <tr>
+          <th className="p-1 text-lg"></th>
+          <th className="p-1 text-lg">ID #</th>
+          <td className="p-1 text-lg">Title</td>
+          <td className="p-1 text-lg">Address</td>
+          <td className="p-1 text-lg">Date</td>
+          <td className="p-1 text-lg">Time</td>
+          <td className="p-1 text-lg">Description</td>
+          <td className="p-1 text-lg">Image URL</td>
+          <td className="p-1 text-lg">Date Created</td>
+          <td className="p-1 text-lg">Actions</td>
+        </tr>
+      </thead>
+      <tbody>
+        {loading ? (
           <tr>
-            <th className="p-1 text-lg"></th>
-            <th className="p-1 text-lg">ID #</th>
-            <td className="p-1 text-lg">Event Name</td>
-            <td className="p-1 text-lg">Location</td>
-            <td className="p-1 text-lg">Address</td>
-            <td className="p-1 text-lg">Date</td>
-            <td className="p-1 text-lg">Time</td>
-            <td className="p-1 text-lg">Description</td>
-            <td className="p-1 text-lg">Image URL</td>
-            <td className="p-1 text-lg">Date Created</td>
-            <td className="p-1 text-lg">Actions</td>
+            <td colSpan={10} className="text-center p-20">
+              <span className="loading loading-spinner loading-lg">
+                Loading Events...
+              </span>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={10} className="text-center p-20">
-                <span className="loading loading-spinner loading-lg">
-                  Loading Events...
-                </span>
-              </td>
-            </tr>
-          ) : hasError ? (
-            <tr>
-              <td colSpan={10} className="text-center p-20">
-                {error}
-              </td>
-            </tr>
-          ) : events.length === 0 ? (
-            <tr>
-              <td colSpan={10} className="text-center p-20">
-                No events to show!
-              </td>
-            </tr>
-          ) : (
-            events.map((event, index) => (
-              <EventRow
-                key={event.id}
-                event={event}
-                index={index}
-                selected={selectedEvents[event.id]}
-                onCheckboxChange={handleCheckboxChange}
-                onRowClick={handleRowClick}
-                onEditClick={handleEditClick}
-              />
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+        ) : hasError ? (
+          <tr>
+            <td colSpan={10} className="text-center p-20">
+              {error}
+            </td>
+          </tr>
+        ) : events.length === 0 ? (
+          <tr>
+            <td colSpan={10} className="text-center p-20">
+              No events to show!
+            </td>
+          </tr>
+        ) : (
+          events.map((event, index) => (
+            <EventRow
+              key={event.id}
+              event={event}
+              index={index}
+              selected={selectedEvents[event.id]}
+              onCheckboxChange={handleCheckboxChange}
+              onRowClick={handleRowClick}
+              onEditClick={handleEditClick}
+            />
+          ))
+        )}
+      </tbody>
+    </table>
   </div>
 );
 
 const AdminEvents = () => {
   const [currentTab, setCurrentTab] = useState("All");
   const [selectedEvents, setSelectedEvents] = useState({});
-  const { events, loading, error, hasError } = useFetchEvents(currentTab);
+  const [selectedForEditEvent, setSelectedForEditEvent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { events, loading, error, hasError, setEvents, fetchEvents } = useFetchEvents(currentTab);
+
+  // add the useEffect here to log current events
+  useEffect(() => {
+    // console.log("Current events:", events);
+  }, [events]);
 
   const handleCheckboxChange = (eventId) => {
-    setSelectedEvents((prev) => ({
-      ...prev,
-      [eventId]: !prev[eventId],
+    setSelectedEvents((prevSelected) => ({
+      ...prevSelected,
+      [eventId]: !prevSelected[eventId], // toggle selection
     }));
   };
 
@@ -221,9 +224,54 @@ const AdminEvents = () => {
     }
   };
 
-  const handleEditClick = (eventId) => {
-    console.log(`Editing event with ID: ${eventId}`);
-    // Redirect to edit page or open a modal here
+  const handleEditClick = (event) => {
+    setSelectedForEditEvent(event)
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);  // close the modal
+    setSelectedForEditEvent(null); // reset selected event on close
+  };
+
+  const handleAddEvent = () => {
+    setSelectedForEditEvent(null); // reset selected event on add
+    setIsModalOpen(true); // open the modal when the button is clicked
+  };
+
+  const handleSaveEvent = async (newEvent) => {
+    // call fetchEvents to refresh the events list after adding a new event
+    await fetchEvents();
+  };
+
+  const handleDeleteEvent = async () => {
+    // retrieve the selected event IDs from the selectedEvents state
+    const selectedEventIds = Object.keys(selectedEvents).filter(
+      (eventId) => selectedEvents[eventId]
+    );
+
+    // if no events are selected, show an alert
+    if (selectedEventIds.length === 0) {
+      alert("Please select at least one event to delete.");
+      return;
+    }
+
+    try { // delete the selected events
+      const eventsToDelete = events.filter(event => selectedEventIds.includes(event.id.toString()));
+
+      const response = await axios.post("http://localhost:3001/delete-event", {
+        eventIds: selectedEventIds, // pass the selected event IDs
+        images: eventsToDelete.map(event => event.image) // pass the image URLs
+      });
+
+      console.log("Response from delete-event:", response.data); // log server response
+
+      fetchEvents();  // refresh the events list
+      setSelectedEvents({}); // reset the selected events
+    } catch (error) {
+      console.error("Error deleting events:", error);
+      alert("An error occurred while deleting events.");
+    }
   };
 
   return (
@@ -245,18 +293,27 @@ const AdminEvents = () => {
         <div className="flex justify-end p-3 pr-1 space-x-8">
           <button
             className="btn bg-[#ff723a] hover:bg-ingrain-board-color"
-            onClick={() => console.log("Add Event clicked")}
+            onClick={handleAddEvent}
           >
             Add Event
           </button>
           <button
             className="btn bg-[#ff723a] hover:bg-ingrain-board-color"
-            onClick={() => console.log("Delete Event clicked")}
+            onClick={handleDeleteEvent}
           >
             Delete Selected
           </button>
         </div>
       </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-neutral-950 opacity-50 z-10"></div>
+      )}
+      <AdminEventsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveEvent}
+        event={selectedForEditEvent}
+      />
     </div>
   );
 };
