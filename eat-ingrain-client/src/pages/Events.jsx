@@ -9,10 +9,10 @@ import Footer from "../components/Footer";
 
 const Events = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
-  const [pastEvents, setPastEvents] = useState([]);
-  const [isLoadingPastEvent, setIsLoadingPastEvent] = useState(true); 
+  const [firstTimeEvents, setFirstTimeEvents] = useState([]);
+  const [isLoadingFirstTimeEvent, setIsLoadingFirstTimeEvent] = useState(true); 
   const [isloadingUpcomingEvent, setIsLoadingUpcomingEvent] = useState(true);
-  const [hasErrorPastEvent, setHasErrorPastEvent] = useState(false);
+  const [hasErrorFirstTimeEvent, setHasErrorFirstTimeEvent] = useState(false);
 
   const fetchWithRetry = async (url, retries = 3) => {
     for (let i = 0; i < retries; i++) {
@@ -45,23 +45,25 @@ const Events = () => {
   }, []);
 
   useEffect(() => {
-    const fetchPastEvents = async () => {
+    const fetchFirstTimeEvents = async () => {
       try {
-        setIsLoadingPastEvent(true);
-        setHasErrorPastEvent(false);
-        const res = await fetchWithRetry("http://localhost:3001/get-past-events");
-        setPastEvents(res);
+        setIsLoadingFirstTimeEvent(true);
+        setHasErrorFirstTimeEvent(false);
+        const res = await fetchWithRetry("http://localhost:3001/get-first-time-events");
+        setFirstTimeEvents(res);
       } catch (err) {
         console.error(err);
-        setPastEvents([]);
-        setIsLoadingPastEvent(false);
-        setHasErrorPastEvent(true);
+        setFirstTimeEvents([]);
+        setIsLoadingFirstTimeEvent(false);
+        setHasErrorFirstTimeEvent(true);
       } finally {
-        setIsLoadingPastEvent(false);
+        setIsLoadingFirstTimeEvent(false);
       }
     };
-    fetchPastEvents();
+    fetchFirstTimeEvents();
   }, []);
+
+
 
   const renderUpcomingEventUI = () => {
     const eventDate = new Date(upcomingEvents[0]?.date);
@@ -69,9 +71,9 @@ const Events = () => {
       <>
         <BackgroundBanner bgImage={upcomingEvents[0].image} />
         {/* <div className="relative z-1 flex flex-col justify-center items-center"> */}
-        <div className="relative z-1 text-left flex flex-col min-h-screen h-full w-4/5 mx-auto pb-12 pt-[200px]">
+        <div className="relative z-1 flex flex-col justify-center items-center h-screen w-4/5 mx-auto pb-12 pt-24">
           <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
-            JOIN US FOR OUR NEXT POPUP <br /> AT {upcomingEvents[0].nameOfPlace}
+            JOIN US FOR OUR NEXT POPUP <br /> AT {upcomingEvents[0].title}
           </h1>
           <h4 className="text-white aesthet-nova-h2 mb-6 text-center text-xl">
             {upcomingEvents[0].address}
@@ -91,8 +93,7 @@ const Events = () => {
   const renderNoUpcomingEventUI = () => (
     <>
       <BackgroundBanner bgImage={event_bg} />
-      {/* <div className="relative z-1 flex flex-col justify-center items-center mb-24 p-12"> */}
-      <div className="relative z-1 flex flex-col justify-center items-center min-h-screen">
+      <div className="relative z-1 flex flex-col justify-center items-center h-screen">
         <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white aesthet-nova text-center">
           NO UPCOMING EVENTS
         </h1>
@@ -106,10 +107,10 @@ const Events = () => {
     );
   };
 
-  const renderErrorPastEventsUI = () => {
+  const renderErrorFirstTimeEventsUI = () => {
     return (
       <div className="flex items-center justify-center">
-        <p className="text-red-500">Error loading past events.</p>
+        <p className="text-red-500">Error loading first time events.</p>
       </div>
     )
   };
@@ -121,9 +122,9 @@ const Events = () => {
         {isloadingUpcomingEvent || upcomingEvents.length === 0 ? renderNoUpcomingEventUI() : renderUpcomingEventUI()}
       </div>
       <div id="container2" className="relative flex items-center justify-center p-4 pl-3 md:p-12 mb-24 mt-24 rounded-xl max-w-screen md:max-w-7xl mx-auto md:drop-shadow-2xl drop-shadow-xl bg-ingrain-board-color">
-        {isLoadingPastEvent ? renderLoadingSpinner() : hasErrorPastEvent ? renderErrorPastEventsUI() :
+        {isLoadingFirstTimeEvent ? renderLoadingSpinner() : hasErrorFirstTimeEvent ? renderErrorFirstTimeEventsUI() :
           <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
-            {pastEvents.map((event, index) => (
+            {firstTimeEvents.map((event, index) => (
               <li key={index} id={event.id}>
                 <EventTimeline
                   eventDate={new Date(event.date).toDateString()}
