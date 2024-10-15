@@ -299,12 +299,47 @@ const AdminEvents = () => {
           </button>
           <button
             className="btn bg-[#ff723a] hover:bg-ingrain-board-color"
-            onClick={handleDeleteEvent}
+            onClick={() => {
+              const selectedEventIds = Object.keys(selectedEvents).filter(
+                (eventId) => selectedEvents[eventId]
+              );
+              if (selectedEventIds.length === 0) {
+                alert("Please select at least one event to delete.");
+              } else {
+                document.getElementById('delete_confirm_modal').showModal();
+              }
+            }}
           >
             Delete Selected
           </button>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <dialog id="delete_confirm_modal" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Confirm Deletion</h3>
+          <p className="py-4">Are you sure you want to delete the selected events?</p>
+          <div className="modal-action">
+            <button
+              className="btn btn-error"
+              onClick={() => {
+                document.getElementById('delete_confirm_modal').close();
+                handleDeleteEvent();
+              }}
+            >
+              Confirm
+            </button>
+            <button
+              className="btn"
+              onClick={() => document.getElementById('delete_confirm_modal').close()}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </dialog>
+
       {isModalOpen && (
         <div className="fixed inset-0 bg-neutral-950 opacity-50 z-10"></div>
       )}
