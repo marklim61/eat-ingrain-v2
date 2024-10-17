@@ -241,9 +241,9 @@ const AdminEventsModal = ({ isOpen, onClose, event, onSave }) => {
             <label className="block">Date:</label>
             <input
               type="date"
+              selected={date}
+              onChange={(date) => setDate(date)}
               className="input input-bordered w-full bg-white mb-2"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
             />
             <label className="block">Time:</label>
             <input

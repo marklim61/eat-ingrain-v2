@@ -24,7 +24,10 @@ const useFetchEvents = (currentTab) => {
       }
 
       // filter events for the timeline tab to include only first-time events
-      const filteredData = currentTab === "Timeline" ? data.filter(event => event.firstTime) : data;
+      const filteredData =
+        currentTab === "Timeline"
+          ? data.filter((event) => event.firstTime)
+          : data;
 
       const formattedData = formatEventDates(filteredData);
       setEvents(formattedData);
@@ -69,25 +72,90 @@ const truncateDescription = (description) => {
 };
 
 // Tab Menu Component inside the same file
-const TabMenu = ({ currentTab, setCurrentTab }) => (
-  <ul className="menu menu-horizontal bg-[#ff723a] rounded-lg rounded-bl-none rounded-br-none border border-[#F16935] border-b-0 p-0 text-xl">
-    {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
-      <li
-        key={tab}
-        className={`cursor-pointer ${
-          currentTab === tab
-            ? "bg-ingrain-board-color text-neutral-950"
-            : "hover:bg-ingrain-board-color"
-        } rounded-lg rounded-bl-none rounded-br-none`}
-        onClick={() => setCurrentTab(tab)}
+// const TabMenu = ({ currentTab, setCurrentTab }) => (
+//   <ul className="menu menu-horizontal bg-[#ff723a] rounded-lg rounded-bl-none rounded-br-none border border-[#F16935] border-b-0 p-0 text-xl">
+//     {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
+//       <li
+//         key={tab}
+//         className={`cursor-pointer ${
+//           currentTab === tab
+//             ? "bg-ingrain-board-color text-neutral-950"
+//             : "hover:bg-ingrain-board-color"
+//         } rounded-lg rounded-bl-none rounded-br-none`}
+//         onClick={() => setCurrentTab(tab)}
+//       >
+//         <a className="hover:bg-ingrain-board-color text-md font-semibold rounded-bl-none rounded-br-none">
+//           {tab}
+//         </a>
+//       </li>
+//     ))}
+//   </ul>
+// );
+
+// Updated Tab Menu Component
+const TabMenu = ({ currentTab, setCurrentTab }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleTabClick = (tab) => {
+    setCurrentTab(tab);
+    setIsDropdownOpen(false); // close the dropdown after selection
+  };
+
+  return (
+    <>
+      {/* Dropdown for mobile screens */}
+      <div
+        className={`dropdown sm:hidden ${
+          isDropdownOpen ? "dropdown-open" : ""
+        }`}
       >
-        <a className="hover:bg-ingrain-board-color text-md font-semibold rounded-bl-none rounded-br-none">
-          {tab}
-        </a>
-      </li>
-    ))}
-  </ul>
-);
+        <div
+          tabIndex={0}
+          role="button"
+          className="btn m-1"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
+        >
+          {currentTab}
+        </div>
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow"
+        >
+          {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
+            <li
+              key={tab}
+              onClick={() => {
+                handleTabClick(tab);
+                document.activeElement.blur();
+              }}
+            >
+              <a>{tab}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Horizontal tab menu for larger screens */}
+      <ul className="hidden menu sm:menu-horizontal bg-[#ff723a] rounded-lg rounded-bl-none rounded-br-none border border-[#F16935] border-b-0 p-0 text-xl">
+        {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
+          <li
+            key={tab}
+            className={`cursor-pointer ${
+              currentTab === tab
+                ? "bg-ingrain-board-color text-neutral-950"
+                : "hover:bg-ingrain-board-color"
+            } rounded-lg rounded-bl-none rounded-br-none`}
+            onClick={() => setCurrentTab(tab)}
+          >
+            <a className="hover:bg-ingrain-board-color text-md font-semibold rounded-bl-none rounded-br-none">
+              {tab}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+};
 
 // Event Row Component inside the same file
 const EventRow = ({
@@ -204,7 +272,8 @@ const AdminEvents = () => {
   const [selectedEvents, setSelectedEvents] = useState({});
   const [selectedForEditEvent, setSelectedForEditEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { events, loading, error, hasError, setEvents, fetchEvents } = useFetchEvents(currentTab);
+  const { events, loading, error, hasError, setEvents, fetchEvents } =
+    useFetchEvents(currentTab);
 
   // add the useEffect here to log current events
   useEffect(() => {
@@ -225,12 +294,12 @@ const AdminEvents = () => {
   };
 
   const handleEditClick = (event) => {
-    setSelectedForEditEvent(event)
+    setSelectedForEditEvent(event);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);  // close the modal
+    setIsModalOpen(false); // close the modal
     setSelectedForEditEvent(null); // reset selected event on close
   };
 
@@ -256,17 +325,20 @@ const AdminEvents = () => {
       return;
     }
 
-    try { // delete the selected events
-      const eventsToDelete = events.filter(event => selectedEventIds.includes(event.id.toString()));
+    try {
+      // delete the selected events
+      const eventsToDelete = events.filter((event) =>
+        selectedEventIds.includes(event.id.toString())
+      );
 
       const response = await axios.post("http://localhost:3001/delete-event", {
         eventIds: selectedEventIds, // pass the selected event IDs
-        images: eventsToDelete.map(event => event.image) // pass the image URLs
+        images: eventsToDelete.map((event) => event.image), // pass the image URLs
       });
 
       console.log("Response from delete-event:", response.data); // log server response
 
-      fetchEvents();  // refresh the events list
+      fetchEvents(); // refresh the events list
       setSelectedEvents({}); // reset the selected events
     } catch (error) {
       console.error("Error deleting events:", error);
@@ -306,7 +378,7 @@ const AdminEvents = () => {
               if (selectedEventIds.length === 0) {
                 alert("Please select at least one event to delete.");
               } else {
-                document.getElementById('delete_confirm_modal').showModal();
+                document.getElementById("delete_confirm_modal").showModal();
               }
             }}
           >
@@ -316,15 +388,20 @@ const AdminEvents = () => {
       </div>
 
       {/* Delete Confirmation Modal */}
-      <dialog id="delete_confirm_modal" className="modal modal-bottom sm:modal-middle">
+      <dialog
+        id="delete_confirm_modal"
+        className="modal modal-bottom sm:modal-middle"
+      >
         <div className="modal-box">
           <h3 className="font-bold text-lg">Confirm Deletion</h3>
-          <p className="py-4">Are you sure you want to delete the selected events?</p>
+          <p className="py-4">
+            Are you sure you want to delete the selected events?
+          </p>
           <div className="modal-action">
             <button
               className="btn btn-error"
               onClick={() => {
-                document.getElementById('delete_confirm_modal').close();
+                document.getElementById("delete_confirm_modal").close();
                 handleDeleteEvent();
               }}
             >
@@ -332,7 +409,9 @@ const AdminEvents = () => {
             </button>
             <button
               className="btn"
-              onClick={() => document.getElementById('delete_confirm_modal').close()}
+              onClick={() =>
+                document.getElementById("delete_confirm_modal").close()
+              }
             >
               Cancel
             </button>

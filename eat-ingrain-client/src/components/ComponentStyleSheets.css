@@ -1,0 +1,11 @@
+.custom-datepicker-popper {
+    max-width: 300px; /* Adjust width as needed */
+  }
+  
+  .react-datepicker__day--selected {
+    background-color: #ff723a; /* Customize selected day color */
+  }
+  
+  .react-datepicker__header {
+    background-color: #ff723a; /* Customize the header color */
+  }
