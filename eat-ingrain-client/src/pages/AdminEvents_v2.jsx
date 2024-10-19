@@ -24,7 +24,10 @@ const useFetchEvents = (currentTab) => {
       }
 
       // filter events for the timeline tab to include only first-time events
-      const filteredData = currentTab === "Timeline" ? data.filter(event => event.firstTime) : data;
+      const filteredData =
+        currentTab === "Timeline"
+          ? data.filter((event) => event.firstTime)
+          : data;
 
       const formattedData = formatEventDates(filteredData);
       setEvents(formattedData);
@@ -68,26 +71,77 @@ const truncateDescription = (description) => {
     : description;
 };
 
-// Tab Menu Component inside the same file
-const TabMenu = ({ currentTab, setCurrentTab }) => (
-  <ul className="menu menu-horizontal bg-[#ff723a] rounded-lg rounded-bl-none rounded-br-none border border-[#F16935] border-b-0 p-0 text-xl">
-    {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
-      <li
-        key={tab}
-        className={`cursor-pointer ${
-          currentTab === tab
-            ? "bg-ingrain-board-color text-neutral-950"
-            : "hover:bg-ingrain-board-color"
-        } rounded-lg rounded-bl-none rounded-br-none`}
-        onClick={() => setCurrentTab(tab)}
+// Updated Tab Menu Component
+const TabMenu = ({ currentTab, setCurrentTab }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleTabClick = (tab) => {
+    setCurrentTab(tab);
+    setIsDropdownOpen(false); // close the dropdown after selection
+  };
+
+  return (
+    <>
+      {/* Dropdown for mobile screens */}
+      <div
+        className={`dropdown sm:hidden ${
+          isDropdownOpen ? "dropdown-open" : ""
+        }`}
       >
-        <a className="hover:bg-ingrain-board-color text-md font-semibold rounded-bl-none rounded-br-none">
-          {tab}
-        </a>
-      </li>
-    ))}
-  </ul>
-);
+        <div
+          tabIndex={0}
+          role="button"
+          className="btn ml-4 mr-4 rounded-bl-none rounded-br-none"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
+        >
+          {currentTab}
+        </div>
+        {isDropdownOpen && (
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-1 ml-4 mr-4 shadow-lg rounded-tl-none"
+          >
+            {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map(
+              (tab) => (
+                <li
+                  key={tab}
+                  className={`${
+                    currentTab === tab ? "bg-[#ff723a]" : ""
+                  } rounded-lg`} // Highlight the current tab
+                  onClick={() => {
+                    handleTabClick(tab);
+                    document.activeElement.blur();
+                  }}
+                >
+                  <a>{tab}</a>
+                </li>
+              )
+            )}
+          </ul>
+        )}
+      </div>
+
+      {/* Horizontal tab menu for larger screens */}
+      <ul className="hidden menu sm:menu-horizontal bg-[#ff723a] rounded-lg rounded-bl-none rounded-br-none border border-[#F16935] border-b-0 p-0 text-xl">
+        {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
+          <li
+            key={tab}
+            className={`cursor-pointer ${
+              currentTab === tab
+                ? "bg-ingrain-board-color text-neutral-950"
+                : "hover:bg-ingrain-board-color"
+            } rounded-lg rounded-bl-none rounded-br-none`}
+            onClick={() => setCurrentTab(tab)}
+          >
+            <a className="hover:bg-ingrain-board-color text-md font-semibold rounded-bl-none rounded-br-none">
+              {tab}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+};
 
 // Event Row Component inside the same file
 const EventRow = ({
@@ -101,7 +155,7 @@ const EventRow = ({
     className={`hover cursor-pointer ${selected ? "bg-[#ff723a]" : ""}`}
     onClick={(e) => onRowClick(event.id, e)}
   >
-    <th className="p-4">
+    <td className="p-4">
       <label>
         <input
           type="checkbox"
@@ -110,8 +164,8 @@ const EventRow = ({
           onChange={() => onCheckboxChange(event.id)}
         />
       </label>
-    </th>
-    <th className="p-1 text-md">{event.id}</th>
+    </td>
+    <td className="p-1 text-md">{event.id}</td>
     <td className="p-1 text-lg">{event.title}</td>
     <td className="p-1 text-lg">{event.address}</td>
     <td className="p-1 text-lg">{event.date}</td>
@@ -144,12 +198,12 @@ const EventTable = ({
   handleRowClick,
   handleEditClick,
 }) => (
-  <div className="overflow-x-auto w-full bg-ingrain-board-color border border-[#F16935] border-tl-none rounded-lg rounded-tl-none p-1">
+  <div className="overflow-x-auto min-w-screen bg-ingrain-board-color border border-[#F16935] border-tl-none rounded-lg rounded-tl-none mx-4 lg:mx-0">
     <table className="table table-xs table-pin-rows table-pin-cols w-full">
       <thead>
         <tr>
-          <th className="p-1 text-lg"></th>
-          <th className="p-1 text-lg">ID #</th>
+          <td className="p-1 text-lg"></td>
+          <td className="p-1 text-lg">ID #</td>
           <td className="p-1 text-lg">Title</td>
           <td className="p-1 text-lg">Address</td>
           <td className="p-1 text-lg">Date</td>
@@ -204,7 +258,8 @@ const AdminEvents = () => {
   const [selectedEvents, setSelectedEvents] = useState({});
   const [selectedForEditEvent, setSelectedForEditEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { events, loading, error, hasError, setEvents, fetchEvents } = useFetchEvents(currentTab);
+  const { events, loading, error, hasError, setEvents, fetchEvents } =
+    useFetchEvents(currentTab);
 
   // add the useEffect here to log current events
   useEffect(() => {
@@ -225,12 +280,12 @@ const AdminEvents = () => {
   };
 
   const handleEditClick = (event) => {
-    setSelectedForEditEvent(event)
+    setSelectedForEditEvent(event);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);  // close the modal
+    setIsModalOpen(false); // close the modal
     setSelectedForEditEvent(null); // reset selected event on close
   };
 
@@ -256,17 +311,20 @@ const AdminEvents = () => {
       return;
     }
 
-    try { // delete the selected events
-      const eventsToDelete = events.filter(event => selectedEventIds.includes(event.id.toString()));
+    try {
+      // delete the selected events
+      const eventsToDelete = events.filter((event) =>
+        selectedEventIds.includes(event.id.toString())
+      );
 
       const response = await axios.post("http://localhost:3001/delete-event", {
         eventIds: selectedEventIds, // pass the selected event IDs
-        images: eventsToDelete.map(event => event.image) // pass the image URLs
+        images: eventsToDelete.map((event) => event.image), // pass the image URLs
       });
 
       console.log("Response from delete-event:", response.data); // log server response
 
-      fetchEvents();  // refresh the events list
+      fetchEvents(); // refresh the events list
       setSelectedEvents({}); // reset the selected events
     } catch (error) {
       console.error("Error deleting events:", error);
@@ -278,7 +336,9 @@ const AdminEvents = () => {
     <div>
       <AdminNavbar />
       <div className="drop-shadow-lg sm:p-0 md:p-8 lg:p-12">
-        <h1 className="text-2xl font-bold mb-4">Manage Events</h1>
+        <h1 className="text-2xl font-bold ml-4 lg:ml-0 lg:mb-4">
+          Manage Events
+        </h1>
         <TabMenu currentTab={currentTab} setCurrentTab={setCurrentTab} />
         <EventTable
           loading={loading}
@@ -290,7 +350,7 @@ const AdminEvents = () => {
           handleRowClick={handleRowClick}
           handleEditClick={handleEditClick}
         />
-        <div className="flex justify-end p-3 pr-1 space-x-8">
+        <div className="flex justify-end pt-4 pr-4 pl-4 lg:pr-0 lg:pl-0 space-x-8">
           <button
             className="btn bg-[#ff723a] hover:bg-ingrain-board-color"
             onClick={handleAddEvent}
@@ -306,7 +366,7 @@ const AdminEvents = () => {
               if (selectedEventIds.length === 0) {
                 alert("Please select at least one event to delete.");
               } else {
-                document.getElementById('delete_confirm_modal').showModal();
+                document.getElementById("delete_confirm_modal").showModal();
               }
             }}
           >
@@ -316,15 +376,20 @@ const AdminEvents = () => {
       </div>
 
       {/* Delete Confirmation Modal */}
-      <dialog id="delete_confirm_modal" className="modal modal-bottom sm:modal-middle">
+      <dialog
+        id="delete_confirm_modal"
+        className="modal modal-bottom sm:modal-middle"
+      >
         <div className="modal-box">
           <h3 className="font-bold text-lg">Confirm Deletion</h3>
-          <p className="py-4">Are you sure you want to delete the selected events?</p>
+          <p className="py-4">
+            Are you sure you want to delete the selected events?
+          </p>
           <div className="modal-action">
             <button
               className="btn btn-error"
               onClick={() => {
-                document.getElementById('delete_confirm_modal').close();
+                document.getElementById("delete_confirm_modal").close();
                 handleDeleteEvent();
               }}
             >
@@ -332,7 +397,9 @@ const AdminEvents = () => {
             </button>
             <button
               className="btn"
-              onClick={() => document.getElementById('delete_confirm_modal').close()}
+              onClick={() =>
+                document.getElementById("delete_confirm_modal").close()
+              }
             >
               Cancel
             </button>
