@@ -3,6 +3,7 @@ import axios from "axios";
 import AdminNavbar from "../components/AdminNavBar";
 import EditIcon from "../assets/edit.png";
 import AdminEventsModal from "../components/AdminEventsModal";
+import e from "cors";
 
 const useFetchEvents = (currentTab) => {
   const [events, setEvents] = useState([]);
@@ -71,27 +72,6 @@ const truncateDescription = (description) => {
     : description;
 };
 
-// Tab Menu Component inside the same file
-// const TabMenu = ({ currentTab, setCurrentTab }) => (
-//   <ul className="menu menu-horizontal bg-[#ff723a] rounded-lg rounded-bl-none rounded-br-none border border-[#F16935] border-b-0 p-0 text-xl">
-//     {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
-//       <li
-//         key={tab}
-//         className={`cursor-pointer ${
-//           currentTab === tab
-//             ? "bg-ingrain-board-color text-neutral-950"
-//             : "hover:bg-ingrain-board-color"
-//         } rounded-lg rounded-bl-none rounded-br-none`}
-//         onClick={() => setCurrentTab(tab)}
-//       >
-//         <a className="hover:bg-ingrain-board-color text-md font-semibold rounded-bl-none rounded-br-none">
-//           {tab}
-//         </a>
-//       </li>
-//     ))}
-//   </ul>
-// );
-
 // Updated Tab Menu Component
 const TabMenu = ({ currentTab, setCurrentTab }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -112,27 +92,34 @@ const TabMenu = ({ currentTab, setCurrentTab }) => {
         <div
           tabIndex={0}
           role="button"
-          className="btn m-1"
+          className="btn ml-4 mr-4 rounded-bl-none rounded-br-none"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
         >
           {currentTab}
         </div>
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow"
-        >
-          {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map((tab) => (
-            <li
-              key={tab}
-              onClick={() => {
-                handleTabClick(tab);
-                document.activeElement.blur();
-              }}
-            >
-              <a>{tab}</a>
-            </li>
-          ))}
-        </ul>
+        {isDropdownOpen && (
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-1 ml-4 mr-4 shadow-lg rounded-tl-none"
+          >
+            {["All", "Upcoming", "Past", "Timeline", "Duplicates"].map(
+              (tab) => (
+                <li
+                  key={tab}
+                  className={`${
+                    currentTab === tab ? "bg-[#ff723a]" : ""
+                  }`} // Highlight the current tab
+                  onClick={() => {
+                    handleTabClick(tab);
+                    document.activeElement.blur();
+                  }}
+                >
+                  <a>{tab}</a>
+                </li>
+              )
+            )}
+          </ul>
+        )}
       </div>
 
       {/* Horizontal tab menu for larger screens */}
@@ -169,7 +156,7 @@ const EventRow = ({
     className={`hover cursor-pointer ${selected ? "bg-[#ff723a]" : ""}`}
     onClick={(e) => onRowClick(event.id, e)}
   >
-    <th className="p-4">
+    <td className="p-4">
       <label>
         <input
           type="checkbox"
@@ -178,8 +165,8 @@ const EventRow = ({
           onChange={() => onCheckboxChange(event.id)}
         />
       </label>
-    </th>
-    <th className="p-1 text-md">{event.id}</th>
+    </td>
+    <td className="p-1 text-md">{event.id}</td>
     <td className="p-1 text-lg">{event.title}</td>
     <td className="p-1 text-lg">{event.address}</td>
     <td className="p-1 text-lg">{event.date}</td>
@@ -212,12 +199,12 @@ const EventTable = ({
   handleRowClick,
   handleEditClick,
 }) => (
-  <div className="overflow-x-auto w-full bg-ingrain-board-color border border-[#F16935] border-tl-none rounded-lg rounded-tl-none p-1">
+  <div className="overflow-x-auto min-w-screen bg-ingrain-board-color border border-[#F16935] border-tl-none rounded-lg rounded-tl-none mx-4 lg:mx-0">
     <table className="table table-xs table-pin-rows table-pin-cols w-full">
       <thead>
         <tr>
-          <th className="p-1 text-lg"></th>
-          <th className="p-1 text-lg">ID #</th>
+          <td className="p-1 text-lg"></td>
+          <td className="p-1 text-lg">ID #</td>
           <td className="p-1 text-lg">Title</td>
           <td className="p-1 text-lg">Address</td>
           <td className="p-1 text-lg">Date</td>
@@ -350,7 +337,9 @@ const AdminEvents = () => {
     <div>
       <AdminNavbar />
       <div className="drop-shadow-lg sm:p-0 md:p-8 lg:p-12">
-        <h1 className="text-2xl font-bold mb-4">Manage Events</h1>
+        <h1 className="text-2xl font-bold ml-4 lg:ml-0 lg:mb-4">
+          Manage Events
+        </h1>
         <TabMenu currentTab={currentTab} setCurrentTab={setCurrentTab} />
         <EventTable
           loading={loading}
@@ -362,7 +351,7 @@ const AdminEvents = () => {
           handleRowClick={handleRowClick}
           handleEditClick={handleEditClick}
         />
-        <div className="flex justify-end p-3 pr-1 space-x-8">
+        <div className="flex justify-end pt-4 pr-4 pl-4 lg:pr-0 lg:pl-0 space-x-8">
           <button
             className="btn bg-[#ff723a] hover:bg-ingrain-board-color"
             onClick={handleAddEvent}

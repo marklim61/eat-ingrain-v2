@@ -215,7 +215,7 @@ const AdminEventsModal = ({ isOpen, onClose, event, onSave }) => {
       <div className="modal-box">
         <form method="dialog">
           <button
-            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-xl p-2"
             onClick={onClose}
           >
             ✕
@@ -254,7 +254,7 @@ const AdminEventsModal = ({ isOpen, onClose, event, onSave }) => {
             />
             <label className="block">Description:</label>
             <textarea
-              className="textarea textarea-bordered w-full bg-white mb-2"
+              className="textarea textarea-bordered w-full bg-white mb-2 text-base"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>

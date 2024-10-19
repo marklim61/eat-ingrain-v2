@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import IngrainLogo from "../assets/transparentINGRAIN.png";
 
 // Reusable button component for navigation
@@ -13,9 +13,32 @@ const NavButton = ({ to, children }) => (
 
 const AdminNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const toggleDropdown = () => {
     setIsOpen((prevIsOpen) => !prevIsOpen); // Toggle the dropdown's open state
+  };
+
+  const closeDropdown = () => {
+    setIsOpen(false); // Close the dropdown
+  };
+
+  const renderNavLink = (to, label) => {
+    const isActive = location.pathname === to;
+    console.log(`Render link to: ${to}, Active: ${isActive}`); // Log link and its active state
+
+    return (
+      <li key={to}>
+        <NavLink
+          to={to}
+          onClick={() => {
+            if (isActive) closeDropdown(); // Close dropdown if already on that page
+          }}
+        >
+          {label}
+        </NavLink>
+      </li>
+    );
   };
 
   return (
@@ -36,35 +59,19 @@ const AdminNavbar = () => {
         <div
           role="button"
           aria-expanded={isOpen}
-          className="btn m-1 bg-[#ff723a] drop-shadow-lg"
+          className="btn mr-4 ml-4 bg-[#ff723a] shadow-lg"
           onClick={toggleDropdown}
         >
           Menu
         </div>
         <ul
           tabIndex={0}
-          className="dropdown-content menu rounded-box z-[1] w-52 p-2 drop-shadow-lg bg-base-100"
+          className="dropdown-content menu rounded-box z-[1] w-52 p-1 shadow-lg bg-base-100 mr-4 ml-4 rounded-tr-none"
         >
-          <li>
-            <NavLink to="/admin/inventory" onClick={() => setIsOpen(false)}>
-              Inventory
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/admin/events" onClick={() => setIsOpen(false)}>
-              Events
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/admin/orders" onClick={() => setIsOpen(false)}>
-              Orders
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/logout" onClick={() => setIsOpen(false)}>
-              Logout
-            </NavLink>
-          </li>
+          {renderNavLink("/admin/inventory", "Inventory")}
+          {renderNavLink("/admin/events", "Events")}
+          {renderNavLink("/admin/orders", "Orders")}
+          {renderNavLink("/logout", "Logout")}
         </ul>
       </div>
 
