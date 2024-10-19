@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import IngrainLogo from "../assets/transparentINGRAIN.png";
 
-// Reusable button component for navigation
 const NavButton = ({ to, children }) => (
   <NavLink to={to}>
     <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg bg-[#ff723a] hover:bg-ingrain-board-color hover:text-neutral-950 border-[#ff723a] drop-shadow-lg text-lg font-normal">
@@ -13,26 +12,42 @@ const NavButton = ({ to, children }) => (
 
 const AdminNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
+  const dropdownRef = useRef(null);
+  const location = useLocation(); // get the current location
 
   const toggleDropdown = () => {
-    setIsOpen((prevIsOpen) => !prevIsOpen); // Toggle the dropdown's open state
+    setIsOpen((prevIsOpen) => !prevIsOpen); // toggle the dropdown's open state
   };
 
   const closeDropdown = () => {
-    setIsOpen(false); // Close the dropdown
+    setIsOpen(false); // close the dropdown
   };
 
-  const renderNavLink = (to, label) => {
-    const isActive = location.pathname === to;
-    console.log(`Render link to: ${to}, Active: ${isActive}`); // Log link and its active state
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        closeDropdown();
+      }
+    };
 
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const renderNavLink = (to, label) => {
     return (
       <li key={to}>
         <NavLink
           to={to}
           onClick={() => {
-            if (isActive) closeDropdown(); // Close dropdown if already on that page
+            if (location.pathname === to) {
+              // if user is already on the current page, force close the dropdown
+              closeDropdown();
+            } else {
+              closeDropdown(); // close the dropdown normally for other pages
+            }
           }}
         >
           {label}
@@ -52,6 +67,7 @@ const AdminNavbar = () => {
 
       {/* Dropdown Menu for Mobile */}
       <div
+        ref={dropdownRef}
         className={`dropdown dropdown-end sm:hidden absolute right-0 ${
           isOpen ? "dropdown-open" : ""
         }`}
@@ -64,15 +80,18 @@ const AdminNavbar = () => {
         >
           Menu
         </div>
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu rounded-box z-[1] w-52 p-1 shadow-lg bg-base-100 mr-4 ml-4 rounded-tr-none"
-        >
-          {renderNavLink("/admin/inventory", "Inventory")}
-          {renderNavLink("/admin/events", "Events")}
-          {renderNavLink("/admin/orders", "Orders")}
-          {renderNavLink("/logout", "Logout")}
-        </ul>
+        {isOpen && (
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu rounded-box z-[1] w-52 p-1 shadow-lg bg-base-100 mr-4 ml-4 rounded-tr-none"
+            id="admin-navbar-menu"
+          >
+            {renderNavLink("/admin/inventory", "Inventory")}
+            {renderNavLink("/admin/events", "Events")}
+            {renderNavLink("/admin/orders", "Orders")}
+            {renderNavLink("/logout", "Logout")}
+          </ul>
+        )}
       </div>
 
       {/* Standard Nav for larger screens */}

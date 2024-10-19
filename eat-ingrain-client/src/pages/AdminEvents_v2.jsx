@@ -3,7 +3,6 @@ import axios from "axios";
 import AdminNavbar from "../components/AdminNavBar";
 import EditIcon from "../assets/edit.png";
 import AdminEventsModal from "../components/AdminEventsModal";
-import e from "cors";
 
 const useFetchEvents = (currentTab) => {
   const [events, setEvents] = useState([]);
@@ -108,7 +107,7 @@ const TabMenu = ({ currentTab, setCurrentTab }) => {
                   key={tab}
                   className={`${
                     currentTab === tab ? "bg-[#ff723a]" : ""
-                  }`} // Highlight the current tab
+                  } rounded-lg`} // Highlight the current tab
                   onClick={() => {
                     handleTabClick(tab);
                     document.activeElement.blur();

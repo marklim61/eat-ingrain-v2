@@ -39,7 +39,7 @@ export default {
 
           "accent-content": "#F16935",
 
-          neutral: "#F16935",
+          neutral: "#ff723a",
 
           "neutral-content": "#000000",
 
@@ -47,7 +47,7 @@ export default {
 
           "base-200": "#ff723a",
 
-          "base-300": "#F16935",
+          "base-300": "#ff723a",
 
           "base-content": "#140401",
 
