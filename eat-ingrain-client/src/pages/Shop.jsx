@@ -36,7 +36,7 @@ const Shop = () => {
       }
     };
 
-    fetchProducts();  
+    fetchProducts();
   }, []);
 
   const updateQuantity = (index, quantity) => {
@@ -62,14 +62,17 @@ const Shop = () => {
   // Hero Section Component
   const HeroSection = () => (
     <div className="h-screen flex items-center justify-center">
-      <div className="relative flex flex-col justify-center items-center bg-neutral-950 h-full w-full p-16 mt-48 mb-48">
+      <div className="relative flex flex-col justify-center items-center bg-neutral-950 h-full w-full p-16 mt-48 mb-48 space-y-56">
         <BackgroundImage />
         <h1 className="md:text-5xl font-bold mb-4 text-white aesthet-nova text-4xl text-center">
           NEW COLLECTION
         </h1>
-        <button onClick={scrollToProducts} className="text-2xl md:text-3xl font-semibold mb-4 text-white aesthet-nova-h2 text-center underline">
-          Shop Now
-          <FontAwesomeIcon icon={faAnglesDown} className="ml-2"/>
+        <button
+          onClick={scrollToProducts}
+          className="text-center text-2xl md:text-3xl font-semibold mb-4 text-white aesthet-nova-h2 underline z-10 flex flex-col items-center"
+        >
+          <span>Shop Now</span>
+          <FontAwesomeIcon icon={faAnglesDown} className="mt-2" />
         </button>
       </div>
     </div>
@@ -82,7 +85,7 @@ const Shop = () => {
       style={{ backgroundImage: `url(${merch_bg})`, opacity: 0.2 }}
     />
   );
-  
+
   // Product Grid Component
   const ProductGrid = ({ products }) => {
     const categorizedProducts = {};
@@ -99,7 +102,9 @@ const Shop = () => {
         {/* Render categories dynamically */}
         {Object.entries(categorizedProducts).map(([category, items]) => (
           <div key={category} className="mb-2">
-            <h2 className="text-3xl font-bold ml-6 mr-6 aesthet-nova">{category}</h2>
+            <h2 className="text-3xl font-bold ml-6 mr-6 aesthet-nova">
+              {category}
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {items.map((product) => (
                 <ProductCard key={product.id} product={product} />
@@ -123,9 +128,7 @@ const Shop = () => {
         className="h-54 w-full object-contain mb-4 rounded transition-transform transform hover:scale-110"
       />
       <h2 className="text-xl font-bold mb-2 aesthet-nova-h1">{product.name}</h2>
-      <p className="text-lg font-semibold aesthet-nova-h2">
-        {(product.price)}
-      </p>
+      <p className="text-lg font-semibold aesthet-nova-h2">{product.price}</p>
     </NavLink>
   );
 

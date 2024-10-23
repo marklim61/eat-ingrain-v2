@@ -926,7 +926,7 @@ BigInt.prototype.toJSON = function () {
 // Import the storeItems from the JSON file (fake database for now)
 const storeItems = require("./storeItems.json");
 
-// define the endpoint
+// define endpoint for searching the Square catalog
 app.get("/search-catalog", async (req, res) => {
   try {
     // call the Square Search Catalog API using the initialized client
@@ -956,7 +956,7 @@ app.get("/search-catalog", async (req, res) => {
     catalogObjects.forEach((obj) => {
       if (obj.type === "ITEM") {
         const itemName = obj.itemData.name;
-        const categoryId = obj.itemData.reportingCategory.id;
+        const categoryId = obj.itemData.reportingCategory?.id;
         const imageId = obj.itemData.imageIds ? obj.itemData.imageIds[0] : null;
 
         // get the category name using the categoryId
@@ -981,6 +981,7 @@ app.get("/search-catalog", async (req, res) => {
 
         // push the combined item details into itemsList
         itemsList.push({
+          id: obj.id,
           name: itemName,
           category: categoryName || "Uncategorized", // default if no category found
           imageUrl: imageUrl || "No image", // default if no image found
@@ -989,7 +990,7 @@ app.get("/search-catalog", async (req, res) => {
       }
     });
 
-    // console.log("Items list:", itemsList);
+    console.log("Items list:", itemsList);
     // send the organized result as JSON
     res.json(itemsList);
   } catch (error) {
@@ -1000,16 +1001,41 @@ app.get("/search-catalog", async (req, res) => {
   }
 });
 
-// app.get("/store-items/:id", (req, res) => {
-//   const product = storeItems.find(
-//     (item) => item.id === parseInt(req.params.id)
-//   );
-//   if (product) {
-//     res.json(product);
-//   } else {
-//     res.status(404).json({ error: "Product not found" });
-//   }
-// });
+app.get("/products/:id", async(req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Call the Retrieve Catalog Object API
+    const response = await client.catalogApi.retrieveCatalogObject(id, true); // true for 'include_related_objects'
+
+    // Extract the relevant data from the response
+    if (!response || !response.result || !response.result.object) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const item = response.result.object;
+    const relatedObjects = response.result.relatedObjects;
+
+    // Extract description and sizes (variations)
+    const description = item.itemData.description;
+    const sizes = item.itemData.variations.map(variation => variation.itemVariationData.name);
+
+    // Send the item details as JSON
+    res.json({
+      name: item.itemData.name,
+      description: description || "No description available",
+      priceInCents: item.itemData.variations[0].itemVariationData.priceMoney.amount, // Example: taking first price
+      sizes: sizes || [],
+      image: relatedObjects
+        .filter(obj => obj.type === 'IMAGE')
+        .map(img => img.imageData.url)[0] || "No image available"
+    });
+
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    res.status(500).json({ error: "An error occurred while fetching product details" });
+  }
+});
 
 app.post("/api/submitPayment", async (req, res) => {
   const {
