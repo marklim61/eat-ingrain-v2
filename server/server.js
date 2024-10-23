@@ -932,120 +932,71 @@ app.get("/search-catalog", async (req, res) => {
     // call the Square Search Catalog API using the initialized client
     const response = await searchCatalog();
 
+    // check if the response is valid
+    if (!response || !response.result || !response.result.objects) {
+      return res.status(404).json({ error: "No catalog objects found" });
+    }
+
     // extract relevant data
     const catalogObjects = response.result.objects;
-    console.log("Catalog Objects:", catalogObjects);
 
+    // maps to hold categories and items
     const categoriesMap = new Map();
+    const itemsList = [];
 
-    catalogObjects.forEach((category) => {
-      if (category.type === "CATEGORY") {
-        const categoryName = category.categoryData.name;
-        categoriesMap.set(category.id, {
-          name: categoryName,
-          items: [],
+    // 1) map all categories
+    catalogObjects.forEach((obj) => {
+      if (obj.type === "CATEGORY") {
+        const categoryName = obj.categoryData.name;
+        categoriesMap.set(obj.id, categoryName);
+      }
+    });
+
+    // 2) process each item to associate it with its category and image
+    catalogObjects.forEach((obj) => {
+      if (obj.type === "ITEM") {
+        const itemName = obj.itemData.name;
+        const categoryId = obj.itemData.reportingCategory.id;
+        const imageId = obj.itemData.imageIds ? obj.itemData.imageIds[0] : null;
+
+        // get the category name using the categoryId
+        const categoryName = categoriesMap.get(categoryId);
+
+        // get the associated image URL
+        const imageUrl = imageId
+          ? catalogObjects.find(
+              (img) => img.type === "IMAGE" && img.id === imageId
+            )?.imageData.url
+          : null;
+
+        let price = "Price not available"; // default price message
+        if (obj.itemData.variations && obj.itemData.variations.length > 0) {
+          // check if variations exist and take the first one
+          const variationPrice =
+            obj.itemData.variations[0].itemVariationData.priceMoney;
+          if (variationPrice) {
+            price = (Number(variationPrice.amount) / 100).toFixed(2); // convert to dollars
+          }
+        }
+
+        // push the combined item details into itemsList
+        itemsList.push({
+          name: itemName,
+          category: categoryName || "Uncategorized", // default if no category found
+          imageUrl: imageUrl || "No image", // default if no image found
+          price: price !== "Price not available" ? `$${price}` : price,
         });
       }
     });
 
-    catalogObjects.forEach((obj) => {
-      if (obj.type === "ITEM") {
-        const itemName = obj.itemData.name;
-        const categoryId = obj.itemData.categoryId;
-        const imageId = obj.itemData.imageIds[0];
-
-        const category = categoriesMap.get(categoryId);
-
-        const image = catalogObjects.find(
-          (img) => img.type === "IMAGE" && img.id === imageId
-        );
-
-        // Find the category only if categoryId is defined
-        if (categoryId) {
-          const category = categoriesMap.get(categoryId);
-
-          // Find the associated image if it exists
-          const image = catalogObjects.find(
-            (img) => img.type === "IMAGE" && img.id === imageId
-          );
-
-          // If the category exists, push the item details into the category
-          if (category) {
-            category.items.push({
-              name: itemName,
-              imageUrl: image ? image.imageData.url : null, // Get image URL if it exists
-            });
-          }
-        } else {
-          // Optionally handle uncategorized items here
-          // console.log(`Item "${itemName}" has no category.`);
-          // You could add uncategorized items to a default category or log them
-        }
-      }
-    });
-
-    const result = Array.from(categoriesMap.values());
-
-    // console.log(result);
-
-    res.json(result);
+    // console.log("Items list:", itemsList);
+    // send the organized result as JSON
+    res.json(itemsList);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching catalog data:", error);
     res
       .status(500)
       .json({ error: "An error occurred while fetching catalog data" });
-  }
-});
-
-// endpoint to fetch items
-app.get("/fetch-items", async (req, res) => {
-  try {
-    // calls the Square API to retrieve catalog data
-    const response = await client.catalogApi.listCatalog(
-      undefined,
-      "ITEM,IMAGE,CATEGORY"
-    );
-    const objects = response.result.objects;
-
-    // filter out objects array to create a new array of only image objects
-    const imageObjects = objects.filter((obj) => obj.type === "IMAGE");
-
-    // create a mapping of image IDs to URLs for easy lookup
-    const imageMap = {};
-    // iterates over imageObjects, and for each image, it adds an entry to imageMap where the key is the image ID and the value is the image URL
-    imageObjects.forEach((image) => {
-      imageMap[image.id] = image.imageData.url;
-    });
-
-    // map over items and find associated images
-    const items = objects
-      .filter((item) => item.type === "ITEM")
-      .map((item) => {
-        const imageIds = item.itemData.imageIds || []; // retrieves the array of image IDs associated with the item
-
-        // if there are any image IDs and retrieves the URL for the first image ID using the imageMap. If there are not image IDs, imageUrl is set to null
-        const imageUrl = imageIds.length > 0 ? imageMap[imageIds[0]] : null;
-
-        const categoryId = item.itemData.categoryId || null;
-
-        const category = objects.find(
-          (obj) => obj.id === categoryId && obj.type === "CATEGORY"
-        );
-
-        return {
-          id: item.id,
-          name: item.itemData.name,
-          image: imageUrl, // Set the image URL here
-          priceInCents:
-            item.itemData.variations[0].itemVariationData.priceMoney.amount,
-          category: category ? category.itemData.name : "Uncategorized",
-        };
-      });
-
-    res.json(items); // sends the constructed array of item objects back to the client as JSON response
-  } catch (error) {
-    console.error("Error retrieving catalog items:", error);
-    res.status(500).json({ error: "Failed to fetch store items" });
   }
 });
 

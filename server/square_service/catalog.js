@@ -7,7 +7,8 @@ async function searchCatalog() {
       objectTypes: ['ITEM', 'IMAGE', 'CATEGORY']
     });
 
-    console.log(response.result);  // Output the specific response
+    return response;
+    // console.log(response.result);  // Output the specific response
   } catch (error) {
     console.error(error);
   }

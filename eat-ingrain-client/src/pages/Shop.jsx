@@ -34,7 +34,7 @@ const Shop = () => {
       }
     };
 
-    fetchProducts();
+    fetchProducts();  
   }, []);
 
   const updateQuantity = (index, quantity) => {
@@ -65,7 +65,7 @@ const Shop = () => {
   // Background Image Component
   const BackgroundImage = () => (
     <div
-      className="absolute inset-0 bg-cover bg-center"
+      className="absolute inset-0 bg-cover bg-center bg-fixed"
       style={{ backgroundImage: `url(${merch_bg})`, opacity: 0.2 }}
     />
   );
@@ -82,16 +82,11 @@ const Shop = () => {
     });
 
     return (
-      // <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-24 mb-24">
-      //   {products.map((product) => (
-      //     <ProductCard key={product.id} product={product} />
-      //   ))}
-      // </div>
-      <div className="w-full mt-24 mb-24">
+      <div className="w-full mt-12 mb-12">
         {/* Render categories dynamically */}
         {Object.entries(categorizedProducts).map(([category, items]) => (
-          <div key={category} className="mb-8">
-            <h2 className="text-3xl font-bold mb-4">{category}</h2>
+          <div key={category} className="mb-2">
+            <h2 className="text-3xl font-bold ml-6 mr-6 aesthet-nova">{category}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {items.map((product) => (
                 <ProductCard key={product.id} product={product} />
@@ -110,13 +105,13 @@ const Shop = () => {
       className="p-4 m-6 rounded-lg shadow-lg bg-ingrain-board-color"
     >
       <img
-        src={product.image}
+        src={product.imageUrl}
         alt={product.name}
         className="h-54 w-full object-contain mb-4 rounded transition-transform transform hover:scale-110"
       />
       <h2 className="text-xl font-bold mb-2 aesthet-nova-h1">{product.name}</h2>
       <p className="text-lg font-semibold aesthet-nova-h2">
-        ${(product.priceInCents / 100).toFixed(2)}
+        {(product.price)}
       </p>
     </NavLink>
   );
