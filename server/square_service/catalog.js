@@ -1,19 +1,16 @@
 const client = require('../square_service/client'); // Adjust the path as necessary
 
-const searchCatalog = async () => {
+async function searchCatalog() {
   try {
-    const response = await client.catalogApi.searchCatalogObjects({
-      objectTypes: ["ITEM", "IMAGE", "CATEGORY"], // Request body
+    const catalogApi = client.catalogApi;
+    const response = await catalogApi.searchCatalogObjects({
+      objectTypes: ['ITEM', 'IMAGE', 'CATEGORY']
     });
 
-    // Handle the successful response
-    console.log("Catalog Objects:", response.result.objects);
-    return response.result;
+    console.log(response.result);  // Output the specific response
   } catch (error) {
-    // Handle errors
-    console.error("Error fetching catalog objects:", error);
-    throw error;
+    console.error(error);
   }
-};
+}
 
 module.exports = { searchCatalog };

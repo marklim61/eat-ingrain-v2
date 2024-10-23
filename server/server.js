@@ -38,6 +38,7 @@ const {
 const app = express();
 const port = process.env.PORT || 3001;
 const { generateUploadURL, deleteImage } = require("./aws/s3.js");
+const { searchCatalog } = require("./square_service/catalog.js");
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -929,9 +930,7 @@ const storeItems = require("./storeItems.json");
 app.get("/search-catalog", async (req, res) => {
   try {
     // call the Square Search Catalog API using the initialized client
-    const response = await client.catalogApi.searchCatalogObjects({
-      objectTypes: ["ITEM", "IMAGE", "CATEGORY"],
-    });
+    const response = await searchCatalog();
 
     // extract relevant data
     const catalogObjects = response.result.objects;
@@ -950,12 +949,9 @@ app.get("/search-catalog", async (req, res) => {
     });
 
     catalogObjects.forEach((obj) => {
-      // console.log("Object type:", obj.type);
       if (obj.type === "ITEM") {
         const itemName = obj.itemData.name;
-        // console.log("Item name:", itemName);
         const categoryId = obj.itemData.categoryId;
-        // console.log("Category ID:", categoryId);
         const imageId = obj.itemData.imageIds[0];
 
         const category = categoriesMap.get(categoryId);
@@ -990,7 +986,7 @@ app.get("/search-catalog", async (req, res) => {
 
     const result = Array.from(categoriesMap.values());
 
-    console.log(result);
+    // console.log(result);
 
     res.json(result);
   } catch (error) {
