@@ -24,7 +24,7 @@ const Shop = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/store-items`
+          `${import.meta.env.VITE_BACKEND_URL}/search-catalog`
         );
         console.log("Fetched products:", response.data); // Check the data structure here
         setProducts(Array.isArray(response.data) ? response.data : []); // Ensure products is always an array
@@ -71,13 +71,37 @@ const Shop = () => {
   );
 
   // Product Grid Component
-  const ProductGrid = ({ products }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-24 mb-24">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  );
+  const ProductGrid = ({ products }) => {
+    const categorizedProducts = {};
+
+    products.forEach((product) => {
+      if (!categorizedProducts[product.category]) {
+        categorizedProducts[product.category] = [];
+      }
+      categorizedProducts[product.category].push(product);
+    });
+
+    return (
+      // <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-24 mb-24">
+      //   {products.map((product) => (
+      //     <ProductCard key={product.id} product={product} />
+      //   ))}
+      // </div>
+      <div className="w-full mt-24 mb-24">
+        {/* Render categories dynamically */}
+        {Object.entries(categorizedProducts).map(([category, items]) => (
+          <div key={category} className="mb-8">
+            <h2 className="text-3xl font-bold mb-4">{category}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {items.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   // Product Card Component
   const ProductCard = ({ product }) => (

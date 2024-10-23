@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const initializeDatabase = require("./database/initialize");
-const { Client } = require("square");
+const client = require("./square_service/client");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { swaggerDocs } = require("./swagger/swaggerDocs");
@@ -925,40 +925,144 @@ BigInt.prototype.toJSON = function () {
 // Import the storeItems from the JSON file (fake database for now)
 const storeItems = require("./storeItems.json");
 
-const client = new Client({
-  accessToken: process.env.SQUARE_ACCESS_TOKEN,
-  environment: "sandbox", // Change to 'production' for live environment
-});
+// define the endpoint
+app.get("/search-catalog", async (req, res) => {
+  try {
+    // call the Square Search Catalog API using the initialized client
+    const response = await client.catalogApi.searchCatalogObjects({
+      objectTypes: ["ITEM", "IMAGE", "CATEGORY"],
+    });
 
-// Endpoint to serve product data
-app.get("/store-items", async (req, res) => {
-  res.json(storeItems);
-  // try {
-  //   const res = await getInventory();
-  //   // const products = res.map((item) => ({
-  //   //   id: item.id,
-  //   //   productName: item.productName,
-  //   //   description: item.description,
-  //   //   price: item.price,
-  //   //   size: item.size,
-  //   //   quantity: item.quantity
-  //   // }))
-  //   res.status(200).json();
-  // } catch (err) {
-  //   res.status(500).json({ error: "Failed to get orders", details: err.message });
-  // }
-});
+    // extract relevant data
+    const catalogObjects = response.result.objects;
+    console.log("Catalog Objects:", catalogObjects);
 
-app.get("/store-items/:id", (req, res) => {
-  const product = storeItems.find(
-    (item) => item.id === parseInt(req.params.id)
-  );
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404).json({ error: "Product not found" });
+    const categoriesMap = new Map();
+
+    catalogObjects.forEach((category) => {
+      if (category.type === "CATEGORY") {
+        const categoryName = category.categoryData.name;
+        categoriesMap.set(category.id, {
+          name: categoryName,
+          items: [],
+        });
+      }
+    });
+
+    catalogObjects.forEach((obj) => {
+      // console.log("Object type:", obj.type);
+      if (obj.type === "ITEM") {
+        const itemName = obj.itemData.name;
+        // console.log("Item name:", itemName);
+        const categoryId = obj.itemData.categoryId;
+        // console.log("Category ID:", categoryId);
+        const imageId = obj.itemData.imageIds[0];
+
+        const category = categoriesMap.get(categoryId);
+
+        const image = catalogObjects.find(
+          (img) => img.type === "IMAGE" && img.id === imageId
+        );
+
+        // Find the category only if categoryId is defined
+        if (categoryId) {
+          const category = categoriesMap.get(categoryId);
+
+          // Find the associated image if it exists
+          const image = catalogObjects.find(
+            (img) => img.type === "IMAGE" && img.id === imageId
+          );
+
+          // If the category exists, push the item details into the category
+          if (category) {
+            category.items.push({
+              name: itemName,
+              imageUrl: image ? image.imageData.url : null, // Get image URL if it exists
+            });
+          }
+        } else {
+          // Optionally handle uncategorized items here
+          // console.log(`Item "${itemName}" has no category.`);
+          // You could add uncategorized items to a default category or log them
+        }
+      }
+    });
+
+    const result = Array.from(categoriesMap.values());
+
+    console.log(result);
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching catalog data" });
   }
 });
+
+// endpoint to fetch items
+app.get("/fetch-items", async (req, res) => {
+  try {
+    // calls the Square API to retrieve catalog data
+    const response = await client.catalogApi.listCatalog(
+      undefined,
+      "ITEM,IMAGE,CATEGORY"
+    );
+    const objects = response.result.objects;
+
+    // filter out objects array to create a new array of only image objects
+    const imageObjects = objects.filter((obj) => obj.type === "IMAGE");
+
+    // create a mapping of image IDs to URLs for easy lookup
+    const imageMap = {};
+    // iterates over imageObjects, and for each image, it adds an entry to imageMap where the key is the image ID and the value is the image URL
+    imageObjects.forEach((image) => {
+      imageMap[image.id] = image.imageData.url;
+    });
+
+    // map over items and find associated images
+    const items = objects
+      .filter((item) => item.type === "ITEM")
+      .map((item) => {
+        const imageIds = item.itemData.imageIds || []; // retrieves the array of image IDs associated with the item
+
+        // if there are any image IDs and retrieves the URL for the first image ID using the imageMap. If there are not image IDs, imageUrl is set to null
+        const imageUrl = imageIds.length > 0 ? imageMap[imageIds[0]] : null;
+
+        const categoryId = item.itemData.categoryId || null;
+
+        const category = objects.find(
+          (obj) => obj.id === categoryId && obj.type === "CATEGORY"
+        );
+
+        return {
+          id: item.id,
+          name: item.itemData.name,
+          image: imageUrl, // Set the image URL here
+          priceInCents:
+            item.itemData.variations[0].itemVariationData.priceMoney.amount,
+          category: category ? category.itemData.name : "Uncategorized",
+        };
+      });
+
+    res.json(items); // sends the constructed array of item objects back to the client as JSON response
+  } catch (error) {
+    console.error("Error retrieving catalog items:", error);
+    res.status(500).json({ error: "Failed to fetch store items" });
+  }
+});
+
+// app.get("/store-items/:id", (req, res) => {
+//   const product = storeItems.find(
+//     (item) => item.id === parseInt(req.params.id)
+//   );
+//   if (product) {
+//     res.json(product);
+//   } else {
+//     res.status(404).json({ error: "Product not found" });
+//   }
+// });
 
 app.post("/api/submitPayment", async (req, res) => {
   const {
