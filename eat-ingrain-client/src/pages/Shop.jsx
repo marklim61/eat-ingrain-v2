@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { NavLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAnglesDown } from "@fortawesome/free-solid-svg-icons";
 
 // Components
 import CartButton from "../components/CartButton";
@@ -47,6 +49,16 @@ const Shop = () => {
     updatedCartItems.splice(index, 1);
   };
 
+  const scrollToProducts = () => {
+    console.log("Scroll button clicked"); // Debugging log
+    const productGrid = document.getElementById("product-grid");
+    if (productGrid) {
+      productGrid.scrollIntoView({ behavior: "smooth" });
+    } else {
+      console.error("Product grid not found!"); // Debugging log
+    }
+  };
+
   // Hero Section Component
   const HeroSection = () => (
     <div className="h-screen flex items-center justify-center">
@@ -55,9 +67,10 @@ const Shop = () => {
         <h1 className="md:text-5xl font-bold mb-4 text-white aesthet-nova text-4xl text-center">
           NEW COLLECTION
         </h1>
-        <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-white aesthet-nova-h2 text-center underline">
+        <button onClick={scrollToProducts} className="text-2xl md:text-3xl font-semibold mb-4 text-white aesthet-nova-h2 text-center underline">
           Shop Now
-        </h3>
+          <FontAwesomeIcon icon={faAnglesDown} className="ml-2"/>
+        </button>
       </div>
     </div>
   );
@@ -69,7 +82,7 @@ const Shop = () => {
       style={{ backgroundImage: `url(${merch_bg})`, opacity: 0.2 }}
     />
   );
-
+  
   // Product Grid Component
   const ProductGrid = ({ products }) => {
     const categorizedProducts = {};
@@ -82,7 +95,7 @@ const Shop = () => {
     });
 
     return (
-      <div className="w-full mt-12 mb-12">
+      <div id="product-grid" className="w-full mt-12 mb-12">
         {/* Render categories dynamically */}
         {Object.entries(categorizedProducts).map(([category, items]) => (
           <div key={category} className="mb-2">
