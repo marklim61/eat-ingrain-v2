@@ -1049,25 +1049,32 @@ app.get("/products/:id", async(req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               items:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     item_id:
- *                       type: string
- *                       description: The ID of the item.
- *                     quantity:
- *                       type: integer
- *                       description: The quantity of the item.
- *               customer_id:
+ *               idempotencyKey:
  *                 type: string
- *                 description: The ID of the customer.
- *               total_amount:
- *                 type: integer
- *                 description: The total amount of the order in cents.
+ *                 description: Unique key to ensure idempotency of the request.
+ *               order:
+ *                 type: object
+ *                 properties:
+ *                   locationId:
+ *                     type: string
+ *                     description: The ID of the location where the order is placed.
+ *                   lineItems:
+ *                     type: array
+ *                     description: List of items in the order.
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         catalogObjectId:
+ *                           type: string
+ *                           description: The catalog object ID for the item.
+ *                         quantity:
+ *                           type: string
+ *                           description: Quantity of the item ordered.
+ *                   customerId:
+ *                     type: string
+ *                     description: The ID of the customer making the order.
  *     responses:
- *       200:
+ *       201:
  *         description: Order created successfully.
  *         content:
  *           application/json:
