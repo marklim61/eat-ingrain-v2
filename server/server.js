@@ -1037,6 +1037,34 @@ app.get("/products/:id", async(req, res) => {
   }
 });
 
+app.post('/create-customer', async (req, res) => {
+  const { givenName, familyName, emailAddress, phoneNumber, address } = req.body;
+
+  try {
+    // Prepare the request body for creating a customer
+    const response = await client.customersApi.createCustomer({
+      givenName,
+      familyName,
+      emailAddress,
+      phoneNumber,
+      address: {
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2,
+        locality: address.city,
+        administrativeDistrictLevel1: address.state,
+        postalCode: address.postalCode,
+        country: address.country,
+      },
+    });
+
+    // Send back the created customer details
+    res.status(201).json(response.result);
+  } catch (error) {
+    console.error("Error creating customer:", error);
+    res.status(500).json({ error: "An error occurred while creating the customer." });
+  }
+});
+
 /**
  * @openapi
  * /create-order:
