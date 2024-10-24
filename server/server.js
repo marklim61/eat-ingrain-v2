@@ -375,82 +375,82 @@ app.get("/get-inventory/item/:productName", async (req, res) => {
 // --------------------end of get endpoints----------------------------------------
 
 // --------------------Post endpoints----------------------------------------
-/**
- * @openapi
- * /create-order:
- *   post:
- *     summary: Create an order
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               firstName:
- *                 type: string
- *               lastName:
- *                 type: string
- *               email:
- *                 type: string
- *               address:
- *                 type: string
- *               appartmentNumber:
- *                 type: string
- *               city:
- *                 type: string
- *               country:
- *                 type: string
- *               state:
- *                 type: string
- *               zipCode:
- *                 type: string
- *               phoneNumber:
- *                 type: string
- *     responses:
- *       200:
- *         description: Order created successfully
- *       500:
- *         description: Failed to create order
- */
-app.post("/create-order", async (req, res) => {
-  const {
-    firstName,
-    lastName,
-    email,
-    address,
-    appartmentNumber,
-    city,
-    country,
-    state,
-    zipCode,
-    phoneNumber,
-  } = req.body;
+// /**
+//  * @openapi
+//  * /create-order:
+//  *   post:
+//  *     summary: Create an order
+//  *     requestBody:
+//  *       required: true
+//  *       content:
+//  *         application/json:
+//  *           schema:
+//  *             type: object
+//  *             properties:
+//  *               firstName:
+//  *                 type: string
+//  *               lastName:
+//  *                 type: string
+//  *               email:
+//  *                 type: string
+//  *               address:
+//  *                 type: string
+//  *               appartmentNumber:
+//  *                 type: string
+//  *               city:
+//  *                 type: string
+//  *               country:
+//  *                 type: string
+//  *               state:
+//  *                 type: string
+//  *               zipCode:
+//  *                 type: string
+//  *               phoneNumber:
+//  *                 type: string
+//  *     responses:
+//  *       200:
+//  *         description: Order created successfully
+//  *       500:
+//  *         description: Failed to create order
+//  */
+// app.post("/create-order", async (req, res) => {
+//   const {
+//     firstName,
+//     lastName,
+//     email,
+//     address,
+//     appartmentNumber,
+//     city,
+//     country,
+//     state,
+//     zipCode,
+//     phoneNumber,
+//   } = req.body;
 
-  try {
-    const result = await order(
-      firstName,
-      lastName,
-      email,
-      address,
-      appartmentNumber,
-      city,
-      country,
-      state,
-      zipCode,
-      phoneNumber
-    );
-    if (result.error) {
-      res.status(500).json(result);
-    } else {
-      res.status(200).json(result);
-    }
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Failed to create order", details: err.message });
-  }
-});
+//   try {
+//     const result = await order(
+//       firstName,
+//       lastName,
+//       email,
+//       address,
+//       appartmentNumber,
+//       city,
+//       country,
+//       state,
+//       zipCode,
+//       phoneNumber
+//     );
+//     if (result.error) {
+//       res.status(500).json(result);
+//     } else {
+//       res.status(200).json(result);
+//     }
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ error: "Failed to create order", details: err.message });
+//   }
+// });
 
 /**
  * @openapi
@@ -1034,6 +1034,76 @@ app.get("/products/:id", async(req, res) => {
   } catch (error) {
     console.error("Error fetching product details:", error);
     res.status(500).json({ error: "An error occurred while fetching product details" });
+  }
+});
+
+/**
+ * @openapi
+ * /create-order:
+ *   post:
+ *     summary: Create an order
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     item_id:
+ *                       type: string
+ *                       description: The ID of the item.
+ *                     quantity:
+ *                       type: integer
+ *                       description: The quantity of the item.
+ *               customer_id:
+ *                 type: string
+ *                 description: The ID of the customer.
+ *               total_amount:
+ *                 type: integer
+ *                 description: The total amount of the order in cents.
+ *     responses:
+ *       200:
+ *         description: Order created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 order_id:
+ *                   type: string
+ *                   description: The ID of the created order.
+ *       400:
+ *         description: Invalid request.
+ *       500:
+ *         description: Internal server error.
+ */
+app.post('/create-order', async (req, res) => {
+  const { order, idempotencyKey } = req.body; // Destructure data from request body
+  const { locationId, lineItems, customerId } = order; // Destructure order properties
+  console.log("Location ID:", locationId);
+  console.log("Idempotency key:", idempotencyKey);
+
+  try {
+    // Create the order request with the correct structure
+    const response = await client.ordersApi.createOrder({
+      idempotencyKey, // Include idempotency key
+      order: {
+        locationId, // Now this is included inside the order object
+        lineItems,
+        customerId // Optional: Add customer ID if needed
+      }
+    });
+
+    // Send response back
+    res.status(201).json(response.result);
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ error: "An error occurred while creating the order" });
   }
 });
 

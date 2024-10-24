@@ -24,7 +24,7 @@ const ProductDetail = () => {
     useContext(CartContext);
 
   useEffect(() => {
-    // Fetch the product details based on the ID
+    // Fetch the product details based on the ITEM's ID
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
